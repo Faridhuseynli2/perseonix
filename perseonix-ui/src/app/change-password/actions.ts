@@ -38,7 +38,7 @@ export async function changePassword(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const user = await requireUser({ allowPasswordChange: true })
+  const user = await requireUser()
 
   const parsed = changePasswordSchema.safeParse({
     currentPassword: formText(formData, "currentPassword"),

@@ -17,8 +17,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ChangePasswordPage() {
-  const user = await requireUser({ allowPasswordChange: true })
-  const forced = user.mustChangePassword
+  const user = await requireUser()
 
   return (
     <main className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-20">
@@ -39,16 +38,12 @@ export default async function ChangePasswordPage() {
         />
         <CardHeader className="px-8 text-center">
           <CardTitle className="text-xl font-semibold tracking-tight text-white">
-            {forced ? "Set a new password" : "Change password"}
+            Change password
           </CardTitle>
-          <CardDescription>
-            {forced
-              ? "Your administrator issued a temporary password. Choose your own to continue."
-              : `Signed in as ${user.email}`}
-          </CardDescription>
+          <CardDescription>{`Signed in as ${user.email}`}</CardDescription>
         </CardHeader>
         <CardContent className="px-8">
-          <ChangePasswordForm forced={forced} />
+          <ChangePasswordForm />
         </CardContent>
       </Card>
 

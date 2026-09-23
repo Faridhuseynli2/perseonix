@@ -22,7 +22,7 @@ const fields = [
   { name: "confirmPassword", label: "Confirm new password", autoComplete: "new-password" },
 ] as const
 
-export function ChangePasswordForm({ forced }: { forced: boolean }) {
+export function ChangePasswordForm() {
   const [state, formAction, pending] = useActionState(changePassword, initialState)
   const errors = state.fieldErrors ?? {}
 
@@ -51,14 +51,12 @@ export function ChangePasswordForm({ forced }: { forced: boolean }) {
       ))}
 
       <div className="mt-1 flex gap-3">
-        {!forced && (
-          <Link
-            href="/app"
-            className={cn(buttonVariants({ variant: "ghost" }), "h-10 flex-1 rounded-md")}
-          >
-            Cancel
-          </Link>
-        )}
+        <Link
+          href="/app"
+          className={cn(buttonVariants({ variant: "ghost" }), "h-10 flex-1 rounded-md")}
+        >
+          Cancel
+        </Link>
         <Button
           type="submit"
           disabled={pending}

@@ -131,18 +131,12 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   return resolution.status === "ok" ? resolution.user : null
 })
 
-export async function requireUser(
-  options: { allowPasswordChange?: boolean } = {}
-): Promise<CurrentUser> {
+export async function requireUser(): Promise<CurrentUser> {
   const resolution = await resolveSession()
   if (resolution.status === "suspended") redirect("/login?reason=evaluation-ended")
   if (resolution.status !== "ok") redirect("/login")
 
-  const { user } = resolution
-  if (user.mustChangePassword && !options.allowPasswordChange) {
-    redirect("/change-password")
-  }
-  return user
+  return resolution.user
 }
 
 /** Admin-only areas answer 404 to everyone else so their existence isn't disclosed. */

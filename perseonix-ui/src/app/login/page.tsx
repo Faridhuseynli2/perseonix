@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const user = await getCurrentUser()
-  if (user) redirect(user.mustChangePassword ? "/change-password" : "/app")
+  if (user) redirect("/app")
 
   const { next, reason } = await searchParams
 

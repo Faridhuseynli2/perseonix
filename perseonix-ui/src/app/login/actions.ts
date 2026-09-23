@@ -80,5 +80,5 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     target: { type: "user", id: user.id, label: user.email },
   })
 
-  redirect(user.mustChangePassword ? "/change-password" : (next ?? "/app"))
+  redirect(next ?? "/app")
 }
