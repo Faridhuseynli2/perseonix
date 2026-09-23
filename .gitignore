@@ -1,0 +1,18 @@
+# OS / junk
+.DS_Store
+**/.DS_Store
+*.log
+
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+test
+
+# Build / deps / data
+node_modules/
+.next/
+.data/
+
+# The app is its own repo (perseonix-ui.git) — don't nest it here
+perseonix-ui/

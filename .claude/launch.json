@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "perseonix-ui",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": [
+        "-lc",
+        "cd /Users/faridhuseynli/Desktop/Perseonix/perseonix-ui && exec npm run dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "rss-perseonix",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": [
+        "-lc",
+        "cd /Users/faridhuseynli/Desktop/rss-perseonix && exec npm run dev"
+      ],
+      "port": 3200
+    }
+  ]
+}
