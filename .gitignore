@@ -8,11 +8,11 @@
 .env.*
 !.env.example
 test
+# n8n playbooks have embedded API keys — never commit
+n8n/
 
 # Build / deps / data
 node_modules/
 .next/
 .data/
-
-# The app is its own repo (perseonix-ui.git) — don't nest it here
-perseonix-ui/
+perseonix-ui/.git/

@@ -1,0 +1,1 @@
+ALTER TABLE "cves" ADD COLUMN "pocs" jsonb DEFAULT '[]'::jsonb NOT NULL;

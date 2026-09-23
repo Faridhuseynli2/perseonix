@@ -1,0 +1,83 @@
+[
+ {
+  "key": "China",
+  "flag": "🇨🇳",
+  "count": 128,
+  "threatLevel": "CRITICAL",
+  "sponsor": "State (PLA/MSS)",
+  "motivation": "Espionage, IP theft, military technology",
+  "description": "China harbors the largest and most active APT ecosystem globally. Chinese cyber operations are conducted primarily by the People's Liberation Army (PLA), the Ministry of State Security (MSS), and affiliated contractor firms operating under their oversight. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "Russia",
+  "flag": "🇷🇺",
+  "count": 42,
+  "threatLevel": "CRITICAL",
+  "sponsor": "State (GRU/FSB/SVR)",
+  "motivation": "Geopolitics, election interference, critical infrastructure sabotage",
+  "description": "Russia's cyber capabilities are developed within the GRU (Military Intelligence), FSB (Federal Security Service), and SVR (Foreign Intelligence Service). Russian APTs are exceptionally capable in both espionage and destructive attack operations. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "North Korea",
+  "flag": "🇰🇵",
+  "count": 11,
+  "threatLevel": "HIGH",
+  "sponsor": "State (RGB)",
+  "motivation": "Financial gain, crypto theft, nuclear program financing",
+  "description": "North Korea's cyber unit operates under the Reconnaissance General Bureau (RGB), affiliated with the Korean People's Army. Lazarus Group, BlueNorOff, and other linked groups conduct both financial attacks and espionage operations. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "Iran",
+  "flag": "🇮🇷",
+  "count": 39,
+  "threatLevel": "HIGH",
+  "sponsor": "State (IRGC/MOIS)",
+  "motivation": "Destructive attacks, regional rivals, sanctions retaliation",
+  "description": "Iran's cyber operations are coordinated by the Islamic Revolutionary Guard Corps (IRGC) and the Ministry of Intelligence (MOIS). Iranian APTs are particularly prominent in destructive attacks and espionage operations. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "Middle East",
+  "flag": "🌙",
+  "count": 24,
+  "threatLevel": "ORTA",
+  "sponsor": "Mixed (state+org)",
+  "motivation": "Regional conflict, opposition monitoring, energy infrastructure",
+  "description": "APT groups operating in the Middle East directly reflect the region's geopolitical tensions. The Saudi Arabia-Iran rivalry, the Israeli-Palestinian conflict, and internal political pressures shape the motivations of these actors. Some are state-sponsored; others are ideologically driven hacktivists. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "Israel",
+  "flag": "🇮🇱",
+  "count": 5,
+  "threatLevel": "ORTA",
+  "sponsor": "State (Unit 8200)",
+  "motivation": "Offensive cyber operations, nuclear sabotage, regional threat",
+  "description": "Israel possesses one of the world's most advanced offensive cyber toolsets, developed largely through Unit 8200. Israeli cyber operations typically target Iran's nuclear program and regional threats. Stuxnet remains the most iconic example of Israel's decades-long offensive cyber activities. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "NATO",
+  "flag": "🌍",
+  "count": 7,
+  "threatLevel": "ORTA",
+  "sponsor": "Allied Nations",
+  "motivation": "Allied intelligence, counter-terrorism, counter-espionage",
+  "description": "NATO member states' cyber units set global standards in both defensive and offensive capabilities. The Five Eyes intelligence alliance (USA, UK, Canada, Australia, New Zealand) forms the core of this ecosystem. Operations are typically conducted for counter-terrorism, counter-intelligence, and critical infrastructure protection. Primary Motivations and Strategic Objectives:"
+ },
+ {
+  "key": "Others",
+  "flag": "🌐",
+  "count": 88,
+  "threatLevel": "VARIABLE",
+  "sponsor": "Mixed / Criminal",
+  "motivation": "Diverse: criminal orgs, hacktivism, regional espionage",
+  "description": null
+ },
+ {
+  "key": "Unknown",
+  "flag": "❓",
+  "count": 67,
+  "threatLevel": "UNKNOWN",
+  "sponsor": "Unknown",
+  "motivation": "Unattributed groups, origin under investigation",
+  "description": null
+ }
+]

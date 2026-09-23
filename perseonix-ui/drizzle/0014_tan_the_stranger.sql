@@ -1,0 +1,1 @@
+ALTER TABLE "ingest_keys" ADD COLUMN "encrypted_key" text;
