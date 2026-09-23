@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 import { getDb } from "@/db"
 import { sessions } from "@/db/schema"
 import { SESSION_COOKIE } from "@/lib/auth/constants"
+import { isSecureRequest } from "@/lib/request"
 
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000
 
@@ -35,7 +36,7 @@ export async function createSession(
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: await isSecureRequest(),
     sameSite: "lax",
     path: "/",
     expires: expiresAt,

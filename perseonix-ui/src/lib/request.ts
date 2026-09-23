@@ -33,3 +33,19 @@ export async function getRequestMeta() {
     userAgent: h.get("user-agent")?.slice(0, 512) ?? null,
   }
 }
+
+/**
+ * Whether the current request reached us over HTTPS. NODE_ENV alone can't
+ * tell us this (a production deploy may still be served over plain HTTP if
+ * no reverse proxy/TLS is set up yet), so prefer signals tied to the actual
+ * connection: a reverse proxy's X-Forwarded-Proto header, then the
+ * configured public APP_URL. Cookies marked `secure` are silently dropped by
+ * browsers on non-HTTPS connections, so defaulting to true here would break
+ * sessions entirely on HTTP deployments.
+ */
+export async function isSecureRequest() {
+  const proto = (await headers()).get("x-forwarded-proto")
+  if (proto) return proto.split(",")[0]?.trim().toLowerCase() === "https"
+  if (process.env.APP_URL) return process.env.APP_URL.startsWith("https://")
+  return false
+}
