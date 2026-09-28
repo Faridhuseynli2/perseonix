@@ -733,6 +733,90 @@ export const savedNewsFilters = pgTable(
   (t) => [index("saved_news_filters_user_idx").on(t.userId, t.createdAt)]
 )
 
+/**
+ * Threat-News incident cases. When a news item warrants investigation an analyst
+ * opens an incident: pick a severity (which sets an SLA due-date), triage, share
+ * analysis in the timeline, then close. Owner is the org (team-wide) or the user.
+ */
+export const newsIncidents = pgTable(
+  "news_incidents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ownerId: uuid("owner_id").notNull(),
+    ownerType: text("owner_type").notNull(), // "org" | "user"
+    seq: integer("seq").notNull(),
+    title: text("title").notNull(),
+    summary: text("summary"),
+    status: text("status").notNull().default("open"), // open | investigating | closed | false_positive
+    severity: text("severity").notNull().default("medium"), // critical | high | medium | low
+    source: text("source").notNull().default("manual"), // auto | manual
+    // The news article this incident was raised from (snapshotted so it stands alone).
+    articleId: uuid("article_id").references(() => newsArticles.id, { onDelete: "set null" }),
+    articleTitle: text("article_title"),
+    articleUrl: text("article_url"),
+    category: text("category"),
+    // SLA: due-by time, derived from severity at open time; re-derived if severity changes.
+    slaDueAt: timestamp("sla_due_at", { withTimezone: true }),
+    assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+    assigneeName: text("assignee_name"),
+    openedById: uuid("opened_by_id").references(() => users.id, { onDelete: "set null" }),
+    openedByName: text("opened_by_name"),
+    closedById: uuid("closed_by_id").references(() => users.id, { onDelete: "set null" }),
+    closedAt: timestamp("closed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    uniqueIndex("news_incidents_owner_seq_key").on(t.ownerId, t.seq),
+    // One incident per article per owner (NULLs distinct → blank incidents don't clash).
+    uniqueIndex("news_incidents_owner_article_key").on(t.ownerId, t.articleId),
+    index("news_incidents_owner_status_idx").on(t.ownerId, t.status),
+  ]
+)
+
+/** Timeline entry for a news incident: opening, status/severity/assignment changes, analyst notes. */
+export const newsIncidentEvents = pgTable(
+  "news_incident_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    incidentId: uuid("incident_id")
+      .notNull()
+      .references(() => newsIncidents.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(), // created | comment | status | severity | assign | closed | reopened
+    body: text("body"),
+    authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+    authorName: text("author_name"),
+    meta: jsonb("meta").$type<Record<string, unknown>>(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("news_incident_events_incident_idx").on(t.incidentId, t.createdAt)]
+)
+
+/** Per-user bell alert when a news incident is opened (by a teammate or automation). */
+export const newsIncidentNotifications = pgTable(
+  "news_incident_notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    incidentId: uuid("incident_id").notNull(),
+    seq: integer("seq").notNull(),
+    title: text("title").notNull(),
+    severity: text("severity").notNull(),
+    source: text("source").notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("news_incident_notifications_user_incident_key").on(t.userId, t.incidentId),
+    index("news_incident_notifications_user_created_idx").on(t.userId, t.createdAt),
+  ]
+)
+
 /** One row per ingestion run (any connector) — observability / "what happened". */
 export const ingestRuns = pgTable(
   "ingest_runs",

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowUpRight, Crosshair, FileText, Newspaper, Search, ShieldCheck, TrendingUp, X } from "lucide-react"
+import { OpenIncidentButton } from "@/components/intel/incidents/open-incident-button"
 import type { ArticleRow } from "@/lib/intel/news"
 import { cn } from "@/lib/utils"
 
@@ -300,6 +301,10 @@ function ArticleDetail({ a }: { a: ArticleRow }) {
             >
               Read original <ArrowUpRight className="size-3.5" />
             </a>
+          </div>
+
+          <div className="mt-4">
+            <OpenIncidentButton articleId={a.id} />
           </div>
 
           {a.relevance && a.relevance.reasons.length > 0 && (

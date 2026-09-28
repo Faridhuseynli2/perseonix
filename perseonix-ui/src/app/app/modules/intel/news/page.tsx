@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, KeyRound, Newspaper } from "lucide-react"
+import { ArrowLeft, KeyRound, Newspaper, Siren } from "lucide-react"
 import { NewsConsole } from "@/components/intel/news-console"
 import { NewsFilters } from "@/components/intel/news-filters"
 import { requireModule } from "@/lib/auth/dal"
@@ -101,15 +101,24 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
             <span>updated {ago(stats.lastAt)} ago</span>
           </div>
         </div>
-        {isAdmin && (
+        <div className="flex items-center gap-2">
           <Link
-            href="/app/admin/connectors/modules?connector=news"
+            href="/app/modules/intel/news/incidents"
             className="inline-flex h-9 items-center gap-1.5 rounded-md border border-ink/12 bg-ink/[0.03] px-3 text-sm text-foreground/85 transition-colors hover:bg-ink/[0.07] hover:text-ink"
           >
-            <KeyRound className="size-4" />
-            Ingestion key
+            <Siren className="size-4 text-sev-high" />
+            Incidents
           </Link>
-        )}
+          {isAdmin && (
+            <Link
+              href="/app/admin/connectors/modules?connector=news"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md border border-ink/12 bg-ink/[0.03] px-3 text-sm text-foreground/85 transition-colors hover:bg-ink/[0.07] hover:text-ink"
+            >
+              <KeyRound className="size-4" />
+              Ingestion key
+            </Link>
+          )}
+        </div>
       </header>
 
       <NewsFilters facets={facets} savedFilters={saved} />
