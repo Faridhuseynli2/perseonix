@@ -817,6 +817,81 @@ export const newsIncidentNotifications = pgTable(
   ]
 )
 
+/**
+ * Talon — C2 hunting. Live command-and-control / offensive-tooling endpoints
+ * discovered on the internet: botnet C2 (abuse.ch Feodo/ThreatFox) + framework
+ * fingerprints (Shodan). One row per unique endpoint (ip:port:software).
+ */
+export const c2Servers = pgTable(
+  "c2_servers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ip: text("ip").notNull(),
+    port: integer("port").notNull(),
+    software: text("software").notNull(), // framework/tool key, e.g. "cobalt_strike", "qakbot"
+    softwareName: text("software_name").notNull(), // display, e.g. "Cobalt Strike"
+    category: text("category"), // "C2 Framework" | "Botnet" | "RAT" | "TDS" | ...
+    malware: text("malware"), // attributed malware family, if known
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    country: text("country"), // ISO2
+    asn: integer("asn"),
+    asName: text("as_name"),
+    hostname: text("hostname"),
+    risk: text("risk").notNull().default("medium"), // critical | high | medium | low
+    source: text("source").notNull(), // feodo | threatfox | shodan
+    status: text("status").notNull().default("online"), // online | offline
+    firstSeen: timestamp("first_seen", { withTimezone: true }),
+    lastSeen: timestamp("last_seen", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    uniqueIndex("c2_servers_endpoint_key").on(t.ip, t.port, t.software),
+    index("c2_servers_software_idx").on(t.software),
+    index("c2_servers_lastseen_idx").on(t.lastSeen),
+    index("c2_servers_first_idx").on(t.firstSeen),
+  ]
+)
+
+/** Daily count per software (from Shodan free count queries) — powers the
+ *  "Active C2 Servers" time series and the software leaderboard without spending
+ *  Shodan query credits. */
+export const c2Snapshots = pgTable(
+  "c2_snapshots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    day: text("day").notNull(), // YYYY-MM-DD (UTC)
+    software: text("software").notNull(),
+    softwareName: text("software_name").notNull(),
+    category: text("category"),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    count: integer("count").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("c2_snapshots_day_software_key").on(t.day, t.software),
+    index("c2_snapshots_day_idx").on(t.day),
+  ]
+)
+
+/** One per C2 ingestion run — observability. */
+export const c2Ingestions = pgTable(
+  "c2_ingestions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ranAt: timestamp("ran_at", { withTimezone: true }).notNull().defaultNow(),
+    status: text("status").notNull(), // ok | error
+    endpointsSeen: integer("endpoints_seen").notNull().default(0),
+    endpointsAdded: integer("endpoints_added").notNull().default(0),
+    softwareCounted: integer("software_counted").notNull().default(0),
+    message: text("message"),
+  },
+  (t) => [index("c2_ingestions_ran_idx").on(t.ranAt)]
+)
+
 /** One row per ingestion run (any connector) — observability / "what happened". */
 export const ingestRuns = pgTable(
   "ingest_runs",

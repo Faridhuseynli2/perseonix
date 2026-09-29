@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, Loader2, Network, Search, Trash2 } from "lucide-react"
 import { GraphCanvas } from "@/components/investigate/graph/graph-canvas"
@@ -60,8 +60,8 @@ function mergeFragment(nodes: GNode[], edges: GEdge[], frag: { nodes: GNode[]; e
   return { nodes: [...byId.values()], edges: nextEdges }
 }
 
-export function GraphExplorer() {
-  const [indicator, setIndicator] = useState("")
+export function GraphExplorer({ initial = "" }: { initial?: string }) {
+  const [indicator, setIndicator] = useState(initial)
   const [rootId, setRootId] = useState<string | null>(null)
   const [graph, setGraph] = useState<{ nodes: GNode[]; edges: GEdge[] }>({ nodes: [], edges: [] })
   const [selected, setSelected] = useState<GNode | null>(null)
@@ -118,6 +118,15 @@ export function GraphExplorer() {
     setExpanded(new Set())
     setError(null)
   }
+
+  // Auto-run once when arriving with ?q=<indicator> (e.g. "Pivot in Graph").
+  const autoRan = useRef(false)
+  useEffect(() => {
+    if (initial && !autoRan.current) {
+      autoRan.current = true
+      start()
+    }
+  }, [initial, start])
 
   return (
     <div className="flex flex-col gap-4">

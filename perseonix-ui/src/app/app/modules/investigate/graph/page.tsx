@@ -7,8 +7,10 @@ import { INVESTIGATE_MODULE_KEY } from "@/lib/investigate/meta"
 
 export const metadata: Metadata = { title: "Infrastructure Graph · Threat Investigation" }
 
-export default async function InvestigateGraphPage() {
+export default async function InvestigateGraphPage({ searchParams }: PageProps<"/app/modules/investigate/graph">) {
   await requireModule(INVESTIGATE_MODULE_KEY)
+  const sp = await searchParams
+  const initial = typeof sp?.q === "string" ? sp.q.slice(0, 300) : ""
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-5">
@@ -36,7 +38,7 @@ export default async function InvestigateGraphPage() {
         </div>
       </header>
 
-      <GraphExplorer />
+      <GraphExplorer initial={initial} />
     </div>
   )
 }

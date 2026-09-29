@@ -176,6 +176,13 @@
       "when": 1790624782457,
       "tag": "0024_steep_hellion",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790711283818,
+      "tag": "0025_omniscient_vance_astro",
+      "breakpoints": true
     }
   ]
 }
