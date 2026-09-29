@@ -46,7 +46,7 @@ export default async function RansomwareVictimsPage({
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
-      <ModuleHeader lastIngestion={ingestion} canRefresh={user.role === "admin"} />
+      <ModuleHeader lastIngestion={ingestion} />
 
       <VictimFilterBar
         value={{ q, country, sector }}
@@ -56,7 +56,7 @@ export default async function RansomwareVictimsPage({
       />
 
       {items.length === 0 ? (
-        <EmptyData canRefresh={user.role === "admin"} />
+        <EmptyData />
       ) : (
         <>
           <VictimList items={items} />

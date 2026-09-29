@@ -42,12 +42,12 @@ export default async function RansomwareGroupsPage({
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
-      <ModuleHeader lastIngestion={ingestion} canRefresh={user.role === "admin"} />
+      <ModuleHeader lastIngestion={ingestion} />
 
       <GroupSearch value={q} resultCount={total} />
 
       {items.length === 0 ? (
-        <EmptyData canRefresh={user.role === "admin"} />
+        <EmptyData />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

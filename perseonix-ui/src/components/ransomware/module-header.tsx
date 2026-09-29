@@ -1,6 +1,5 @@
-import { Skull } from "lucide-react"
+import { RefreshCw, Skull } from "lucide-react"
 import { ModuleTabs } from "@/components/ransomware/module-tabs"
-import { RefreshButton } from "@/components/ransomware/refresh-button"
 import type { IngestionInfo } from "@/lib/ransomware/data"
 
 function ago(iso: string): string {
@@ -12,13 +11,7 @@ function ago(iso: string): string {
   return `${d}d ago`
 }
 
-export function ModuleHeader({
-  lastIngestion,
-  canRefresh,
-}: {
-  lastIngestion: IngestionInfo
-  canRefresh: boolean
-}) {
+export function ModuleHeader({ lastIngestion }: { lastIngestion: IngestionInfo }) {
   return (
     <section className="hud-corners relative overflow-hidden rounded-2xl border border-ink/[0.08] bg-navy-900/70">
       <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-sev-critical" />
@@ -46,25 +39,20 @@ export function ModuleHeader({
             </p>
           </div>
 
-          {canRefresh && (
-            <div className="flex flex-col items-end gap-2">
-              <RefreshButton />
-              <p className="font-mono text-[10px] tracking-wider text-muted-foreground/60 uppercase">
-                {lastIngestion
-                  ? `Updated ${ago(lastIngestion.ranAt)}`
-                  : "Never updated — run a refresh"}
-              </p>
-            </div>
-          )}
+          {/* Auto-refresh status — data is pulled hourly by a scheduled job (no manual button). */}
+          <div className="flex flex-col items-end gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-ink/10 bg-ink/[0.03] px-2.5 py-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+              <RefreshCw className="size-3 text-glow" />
+              Auto · hourly
+            </span>
+            <p className="font-mono text-[10px] tracking-wider text-muted-foreground/60 uppercase">
+              {lastIngestion ? `Updated ${ago(lastIngestion.ranAt)}` : "Awaiting first sync"}
+            </p>
+          </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-3 border-t border-ink/[0.08] pt-4">
           <ModuleTabs />
-          {!canRefresh && lastIngestion && (
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground/60 uppercase">
-              Updated {ago(lastIngestion.ranAt)}
-            </span>
-          )}
         </div>
       </div>
     </section>

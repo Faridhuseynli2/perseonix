@@ -4,15 +4,13 @@ import type { VictimRow } from "@/lib/ransomware/data"
 import { countryName, flagEmoji, sectorLabel, timeAgo } from "@/lib/ransomware/meta"
 import { cn } from "@/lib/utils"
 
-export function EmptyData({ canRefresh }: { canRefresh: boolean }) {
+export function EmptyData() {
   return (
     <div className="rounded-xl border border-dashed border-ink/12 bg-navy-900/40 px-6 py-14 text-center">
       <DatabaseZap className="mx-auto size-7 text-muted-foreground/40" />
       <p className="mt-3 text-sm font-medium text-ink">No ransomware data yet</p>
       <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
-        {canRefresh
-          ? "Hit “Refresh data” to pull the latest groups and claimed victims from the source."
-          : "Data hasn’t been loaded yet. Please check back shortly."}
+        Data is pulled automatically every hour. The first sync will appear here shortly.
       </p>
     </div>
   )

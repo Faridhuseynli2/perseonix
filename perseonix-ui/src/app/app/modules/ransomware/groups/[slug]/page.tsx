@@ -135,7 +135,7 @@ export default async function RansomwareGroupPage({
             </h2>
             {victims.length === 0 ? (
               <div className="mt-3">
-                <EmptyData canRefresh={user.role === "admin"} />
+                <EmptyData />
               </div>
             ) : (
               <VictimList items={victims} className="mt-3" />

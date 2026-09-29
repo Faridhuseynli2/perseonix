@@ -7,7 +7,6 @@ import { LiveFeed } from "@/components/ransomware/live-feed"
 import { MetricRail } from "@/components/ransomware/metric-rail"
 import { EmptyData } from "@/components/ransomware/pieces"
 import { RankCard } from "@/components/ransomware/rank-card"
-import { RefreshButton } from "@/components/ransomware/refresh-button"
 import { RansomwareWatchButton } from "@/components/ransomware/watch-button"
 import { requireModule } from "@/lib/auth/dal"
 import {
@@ -52,7 +51,6 @@ export default async function RansomwareDashboard({
   searchParams,
 }: PageProps<"/app/modules/ransomware">) {
   const { user } = await requireModule(RANSOMWARE_MODULE_KEY)
-  const canRefresh = user.role === "admin"
   const params = await searchParams
   const range = normalizeRange(one(params.range))
   const facets: Facets = {
@@ -120,7 +118,6 @@ export default async function RansomwareDashboard({
               Watchlist
             </Link>
           </nav>
-          {canRefresh && <RefreshButton />}
         </div>
       </header>
 
@@ -151,7 +148,7 @@ export default async function RansomwareDashboard({
       )}
 
       {empty ? (
-        <EmptyData canRefresh={canRefresh} />
+        <EmptyData />
       ) : (
         <>
           <section>
