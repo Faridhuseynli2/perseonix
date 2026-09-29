@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Share2 } from "lucide-react"
 import { EmptyState, Panel, tableHeadClass } from "@/components/admin/ui"
 import { InvestigateForm } from "@/components/investigate/investigate-form"
 import { KindBadge, VerdictBadge } from "@/components/investigate/report"
@@ -30,12 +31,21 @@ export default async function InvestigatePage({
 
   return (
     <div className="mx-auto max-w-[1400px]">
-      <div>
-        <p className="eyebrow text-glow">Module</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{module.name}</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          Investigate domains, IP addresses and URLs across {enabledCount} intelligence sources.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow text-glow">Module</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{module.name}</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Investigate domains, IP addresses and URLs across {enabledCount} intelligence sources.
+          </p>
+        </div>
+        <Link
+          href="/app/modules/investigate/graph"
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink/12 bg-ink/[0.03] px-3.5 text-sm font-medium text-foreground/90 transition-colors hover:border-glow/40 hover:bg-ink/[0.07] hover:text-ink"
+        >
+          <Share2 className="size-4 text-glow" />
+          Infrastructure Graph
+        </Link>
       </div>
 
       <section className="relative mt-8 overflow-hidden rounded-2xl border border-ink/[0.07] bg-navy-800/60 p-6 lg:p-8">
