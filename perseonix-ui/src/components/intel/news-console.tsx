@@ -49,6 +49,16 @@ const arrivedTitle = (iso: string | null, tz: string) =>
 // True when the source's publish time is meaningfully different from when we ingested it.
 const publishedDiffers = (a: ArticleRow) =>
   !!a.publishedAt && Math.abs(new Date(a.createdAt).getTime() - new Date(a.publishedAt).getTime()) > 120_000
+// A publish stamp of exactly 00:00:00 UTC almost always means the source feed gave
+// only a date (no clock). Rendering a precise time then invents a fake delay, so we
+// show just the date for these.
+const isDateOnlyUTC = (iso: string | null) => {
+  if (!iso) return false
+  const d = new Date(iso)
+  return d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0
+}
+const dateOnly = (iso: string | null) =>
+  formatInTimeZone(iso, "UTC", { day: "numeric", month: "short", year: "numeric" })
 
 export function NewsConsole({
   rows,
@@ -335,7 +345,17 @@ function ArticleDetail({ a, tz }: { a: ArticleRow; tz: string }) {
             {showPublished && (
               <span className="inline-flex flex-wrap items-center gap-x-1.5 font-mono text-[11px] text-muted-foreground/70">
                 <span className="tracking-wide text-muted-foreground/50 uppercase">Published</span>
-                <span className="tabular-nums">{absFull(a.publishedAt, tz)}</span>
+                {isDateOnlyUTC(a.publishedAt) ? (
+                  <>
+                    <span className="tabular-nums">{dateOnly(a.publishedAt)}</span>
+                    <span className="text-muted-foreground/40">· date only</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="tabular-nums">{absFull(a.publishedAt, tz)}</span>
+                    <span className="text-muted-foreground/50">· {offsetLabel(tz, new Date(a.publishedAt!))}</span>
+                  </>
+                )}
               </span>
             )}
           </div>
