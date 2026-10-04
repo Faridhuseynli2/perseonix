@@ -377,7 +377,9 @@ export async function listArticlesAdvanced(f: NewsFilter): Promise<ArticleRow[]>
       .select()
       .from(newsArticles)
       .where(clauses.length ? and(...clauses) : undefined)
-      .orderBy(desc(newsArticles.publishedAt), desc(newsArticles.createdAt))
+      // Order by when it landed on the platform (arrival) so newest intake is first,
+      // matching the arrival timestamps shown in the console.
+      .orderBy(desc(newsArticles.createdAt), desc(newsArticles.publishedAt))
       .limit(f.limit ?? 300)
     return attachMentions(db, rows)
   }, [])

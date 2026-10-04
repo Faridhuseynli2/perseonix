@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ArrowUpRight, Crosshair, FileText, Newspaper, Search, ShieldCheck, TrendingUp, X } from "lucide-react"
+import { ArrowUpRight, Clock, Crosshair, FileText, Newspaper, Search, ShieldCheck, TrendingUp, X } from "lucide-react"
 import { OpenIncidentButton } from "@/components/intel/incidents/open-incident-button"
 import type { ArticleRow } from "@/lib/intel/news"
+import { formatInTimeZone, offsetLabel } from "@/lib/timezone"
 import { cn } from "@/lib/utils"
 
 const SEV: Record<string, { dot: string; text: string; spine: string }> = {
@@ -24,6 +25,7 @@ const REL: Record<string, { chip: string; label: string }> = {
 function ago(iso: string | null): string {
   if (!iso) return "—"
   const min = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)
+  if (min < 0) return "just now"
   if (min < 1) return "just now"
   if (min < 60) return `${min}m ago`
   const h = Math.floor(min / 60)
@@ -32,10 +34,21 @@ function ago(iso: string | null): string {
   if (d === 1) return "yesterday"
   if (d < 7) return `${d}d ago`
   if (d < 30) return `${Math.floor(d / 7)}w ago`
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+  return `${Math.floor(d / 30)}mo ago`
 }
-const fullDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : ""
+
+// Absolute timestamp in the viewer's own timezone — "4 Oct 2026, 14:03".
+const absFull = (iso: string | null, tz: string) =>
+  formatInTimeZone(iso, tz, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })
+// Compact absolute for dense list rows — "4 Oct, 14:03".
+const absCompact = (iso: string | null, tz: string) =>
+  formatInTimeZone(iso, tz, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })
+// Full arrival line for tooltips — date, time, zone offset and relative age.
+const arrivedTitle = (iso: string | null, tz: string) =>
+  iso ? `Arrived on platform: ${absFull(iso, tz)} · ${offsetLabel(tz, new Date(iso))} (${ago(iso)})` : "—"
+// True when the source's publish time is meaningfully different from when we ingested it.
+const publishedDiffers = (a: ArticleRow) =>
+  !!a.publishedAt && Math.abs(new Date(a.createdAt).getTime() - new Date(a.publishedAt).getTime()) > 120_000
 
 export function NewsConsole({
   rows,
@@ -43,12 +56,15 @@ export function NewsConsole({
   hasFilter,
   endpoint,
   initialSelectedId,
+  tz,
 }: {
   rows: ArticleRow[]
   trendingActors: { value: string; count: number }[]
   hasFilter: boolean
   endpoint: string
   initialSelectedId?: string
+  /** The viewer's IANA timezone — every timestamp renders in it. */
+  tz: string
 }) {
   const [query, setQuery] = useState("")
   const q = query.trim().toLowerCase()
@@ -171,7 +187,9 @@ export function NewsConsole({
                         </>
                       )}
                       <span aria-hidden className="text-muted-foreground/30">·</span>
-                      <span className="shrink-0">{ago(a.publishedAt ?? a.createdAt)}</span>
+                      <span className="shrink-0 tabular-nums" title={arrivedTitle(a.createdAt, tz)}>
+                        {absCompact(a.createdAt, tz)}
+                      </span>
                       {a.relevance && a.relevance.level !== "none" && a.relevance.level !== "low" && (
                         <span className={cn("ml-auto shrink-0 rounded border px-1 py-px text-[8.5px] normal-case", REL[a.relevance.level]?.chip)}>
                           ★ you
@@ -220,7 +238,7 @@ export function NewsConsole({
         {/* detail */}
         {selected && (
           <div ref={detailRef} className="scroll-mt-4">
-            <ArticleDetail a={selected} />
+            <ArticleDetail a={selected} tz={tz} />
           </div>
         )}
       </div>
@@ -255,9 +273,9 @@ function EntityRow({ label, sub, dot, href }: { label: string; sub?: string | nu
   return <li>{href ? <Link href={href}>{inner}</Link> : inner}</li>
 }
 
-function ArticleDetail({ a }: { a: ArticleRow }) {
+function ArticleDetail({ a, tz }: { a: ArticleRow; tz: string }) {
   const sev = SEV[a.severity ?? "info"] ?? SEV.info
-  const when = a.publishedAt ?? a.createdAt
+  const showPublished = publishedDiffers(a)
   const targets = [...a.sectors, ...a.regions]
   const hasEntities = a.actors.length > 0 || a.malware.length > 0 || a.ttps.length > 0 || a.cves.length > 0
   const hasIndicators = a.actors.length > 0 || a.malware.length > 0 || a.ttps.length > 0 || targets.length > 0
@@ -292,7 +310,6 @@ function ArticleDetail({ a }: { a: ArticleRow }) {
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
             {a.source && <span className="text-foreground/80">{a.source}</span>}
-            <span title={fullDate(when)}>{ago(when)}</span>
             <a
               href={a.url}
               target="_blank"
@@ -301,6 +318,26 @@ function ArticleDetail({ a }: { a: ArticleRow }) {
             >
               Read original <ArrowUpRight className="size-3.5" />
             </a>
+          </div>
+
+          {/* Timeline: when this landed on the platform (arrival), in the viewer's timezone. */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span
+              className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-md border border-glow/20 bg-glow/[0.05] px-2.5 py-1 font-mono text-[11px]"
+              title={arrivedTitle(a.createdAt, tz)}
+            >
+              <Clock className="size-3.5 text-glow" />
+              <span className="tracking-wide text-muted-foreground/70 uppercase">Arrived</span>
+              <span className="tabular-nums text-ink">{absFull(a.createdAt, tz)}</span>
+              <span className="text-muted-foreground/60">· {offsetLabel(tz, new Date(a.createdAt))}</span>
+              <span className="text-muted-foreground/50">· {ago(a.createdAt)}</span>
+            </span>
+            {showPublished && (
+              <span className="inline-flex flex-wrap items-center gap-x-1.5 font-mono text-[11px] text-muted-foreground/70">
+                <span className="tracking-wide text-muted-foreground/50 uppercase">Published</span>
+                <span className="tabular-nums">{absFull(a.publishedAt, tz)}</span>
+              </span>
+            )}
           </div>
 
           <div className="mt-4">

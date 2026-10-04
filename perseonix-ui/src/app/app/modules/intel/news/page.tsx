@@ -16,6 +16,7 @@ import {
   type NewsFilter,
 } from "@/lib/intel/news"
 import { getOrgContext, scoreArticles } from "@/lib/intel/news-relevance"
+import { formatInTimeZone, offsetLabel } from "@/lib/timezone"
 
 export const metadata: Metadata = { title: "Cyber Threat News · Threat Intelligence" }
 
@@ -31,6 +32,7 @@ function ago(iso: string | null): string {
 
 export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/modules/intel/news">) {
   const { user } = await requireModule(INTEL_MODULE_KEY)
+  const tz = user.timezone || "UTC"
   const isAdmin = user.role === "admin"
   const connector = getConnector("news")!
   const sp = await searchParams
@@ -98,7 +100,17 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
             <span aria-hidden className="text-muted-foreground/30">/</span>
             <span>{stats.last24h} in last 24h</span>
             <span aria-hidden className="text-muted-foreground/30">/</span>
-            <span>updated {ago(stats.lastAt)} ago</span>
+            {stats.lastAt ? (
+              <span title={`Last item arrived ${formatInTimeZone(stats.lastAt, tz, { dateStyle: "medium", timeStyle: "short" })} · ${offsetLabel(tz, new Date(stats.lastAt))}`}>
+                last arrival{" "}
+                <span className="text-foreground/85">
+                  {formatInTimeZone(stats.lastAt, tz, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })}
+                </span>{" "}
+                <span className="text-muted-foreground/60">{offsetLabel(tz, new Date(stats.lastAt))} · {ago(stats.lastAt)} ago</span>
+              </span>
+            ) : (
+              <span>no items yet</span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -129,6 +141,7 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
         hasFilter={hasFilter}
         endpoint={connector.endpoint}
         initialSelectedId={focusId || undefined}
+        tz={tz}
       />
     </div>
   )
