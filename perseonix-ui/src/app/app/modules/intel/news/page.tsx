@@ -9,6 +9,7 @@ import { getConnector, INTEL_MODULE_KEY } from "@/lib/intel/connectors"
 import {
   computeCorroboration,
   getArticle,
+  keywordTimeline,
   listArticlesAdvanced,
   listSavedFilters,
   newsFacets,
@@ -22,6 +23,14 @@ import { formatInTimeZone, offsetLabel } from "@/lib/timezone"
 export const metadata: Metadata = { title: "Cyber Threat News · Threat Intelligence" }
 
 const RANGE_MIN: Record<string, number> = { "1h": 60, "24h": 1440, "3d": 4320, "7d": 10080, "30d": 43200 }
+// Keyword-timeline windows (ms). "all" => whole archive.
+const K_RANGE_MS: Record<string, number> = {
+  "24h": 86_400_000,
+  "7d": 7 * 86_400_000,
+  "30d": 30 * 86_400_000,
+  "90d": 90 * 86_400_000,
+  "1y": 365 * 86_400_000,
+}
 
 function ago(iso: string | null): string {
   if (!iso) return "—"
@@ -45,6 +54,13 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
   const range = typeof sp?.range === "string" ? sp.range : ""
   const focusId = typeof sp?.a === "string" ? sp.a : ""
 
+  // Keyword-activity lens (additive, read-only): keyword + axis window + a clicked bucket.
+  const kw = typeof sp?.k === "string" ? sp.k.trim() : ""
+  const kRange = typeof sp?.krange === "string" && K_RANGE_MS[sp.krange] ? sp.krange : "all"
+  const kFromMs = typeof sp?.kfrom === "string" && /^\d+$/.test(sp.kfrom) ? Number(sp.kfrom) : null
+  const kToMs = typeof sp?.kto === "string" && /^\d+$/.test(sp.kto) ? Number(sp.kto) : null
+  const kWindow = K_RANGE_MS[kRange] ? { rangeMs: K_RANGE_MS[kRange] } : {}
+
   const filter: NewsFilter = {
     severities: list("sev"),
     categories: list("cat"),
@@ -55,17 +71,23 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
     malware: list("malware"),
     sectors: list("sector"),
     sinceMinutes: RANGE_MIN[range] ?? 0,
+    keyword: kw || undefined,
+    arrivedFrom: kFromMs ? new Date(kFromMs) : undefined,
+    arrivedTo: kToMs ? new Date(kToMs) : undefined,
     limit: 300,
   }
   const hasFilter =
-    range !== "" || Object.entries(filter).some(([k, v]) => Array.isArray(v) && v.length > 0 && k !== "limit")
+    range !== "" ||
+    kw !== "" ||
+    Object.entries(filter).some(([k, v]) => Array.isArray(v) && v.length > 0 && k !== "limit")
 
-  const [rowsBase, stats, facets, trendingActors, saved] = await Promise.all([
+  const [rowsBase, stats, facets, trendingActors, saved, timeline] = await Promise.all([
     listArticlesAdvanced(filter),
     newsStats(),
     newsFacets(),
     topMentions("actor", 8),
     listSavedFilters(user.id),
+    kw ? keywordTimeline(kw, kWindow) : Promise.resolve(null),
   ])
 
   // Deep-link focus: pull an out-of-filter article in so it can be selected.
@@ -134,7 +156,14 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
         </div>
       </header>
 
-      <NewsTimelineSearch tz={tz} />
+      <NewsTimelineSearch
+        tz={tz}
+        keyword={kw}
+        range={kRange}
+        timeline={timeline}
+        selFrom={kFromMs}
+        selTo={kToMs}
+      />
 
       <NewsFilters facets={facets} savedFilters={saved} />
 

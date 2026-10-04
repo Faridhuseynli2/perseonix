@@ -1,5 +1,5 @@
 import "server-only"
-import { and, desc, eq, gte, ilike, inArray, or, sql } from "drizzle-orm"
+import { and, desc, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm"
 import type { AnyPgColumn } from "drizzle-orm/pg-core"
 import { getDb } from "@/db"
 import { newsArticles, newsMentions, savedNewsFilters } from "@/db/schema"
@@ -333,6 +333,11 @@ export type NewsFilter = {
   malware?: string[]
   sectors?: string[]
   sinceMinutes?: number
+  /** Free-text keyword (same matching as the activity timeline). */
+  keyword?: string
+  /** Narrow to items that arrived on the platform within this window. */
+  arrivedFrom?: Date
+  arrivedTo?: Date
   limit?: number
 }
 
@@ -371,6 +376,12 @@ export async function listArticlesAdvanced(f: NewsFilter): Promise<ArticleRow[]>
     if (f.sources?.length) clauses.push(inArray(newsArticles.source, f.sources))
     if (f.sinceMinutes && f.sinceMinutes > 0)
       clauses.push(gte(newsArticles.createdAt, new Date(Date.now() - f.sinceMinutes * 60_000)))
+    if (f.arrivedFrom) clauses.push(gte(newsArticles.createdAt, f.arrivedFrom))
+    if (f.arrivedTo) clauses.push(lte(newsArticles.createdAt, f.arrivedTo))
+    if (f.keyword && f.keyword.trim().length >= 2) {
+      const cond = await keywordCondition(db, f.keyword)
+      if (cond) clauses.push(cond)
+    }
     if (idSet) clauses.push(inArray(newsArticles.id, [...idSet]))
 
     const rows = await db
@@ -388,77 +399,114 @@ export async function listArticlesAdvanced(f: NewsFilter): Promise<ArticleRow[]>
 // ── Keyword activity timeline ───────────────────────────────────────────────
 // Research lens: given a keyword, count EVERY matching article (title/summary/
 // source/category/analyst-note OR an extracted entity) and bucket their arrival
-// times into a histogram — "when did activity around this term happen". Read-only
-// and additive; it never touches the stored feed.
+// times into a fixed-resolution histogram across a time window — "when did
+// activity around this term happen". Read-only and additive; it never touches
+// the stored feed.
+
+/** OR-condition matching a keyword across article text + extracted entities. */
+async function keywordCondition(db: Awaited<ReturnType<typeof getDb>>, keyword: string) {
+  const like = `%${keyword.trim().replace(/[\\%_]/g, (m) => "\\" + m)}%`
+  const mentionRows = await db
+    .select({ id: newsMentions.articleId })
+    .from(newsMentions)
+    .where(ilike(newsMentions.value, like))
+    .limit(20_000)
+  const ids = [...new Set(mentionRows.map((m) => m.id))]
+  return or(
+    ilike(newsArticles.title, like),
+    ilike(newsArticles.summary, like),
+    ilike(newsArticles.source, like),
+    ilike(newsArticles.category, like),
+    ilike(newsArticles.analystNote, like),
+    ids.length ? inArray(newsArticles.id, ids) : sql`false`
+  )
+}
+
 export type NewsTimeline = {
   keyword: string
+  /** Matches inside the window. */
   total: number
   /** Width of one histogram bucket, in ms. */
   bucketMs: number
+  /** Axis window edges (ISO). */
   from: string | null
   to: string | null
-  /** Dense buckets across [from, to] (gaps included as count 0). t = bucket start epoch ms. */
+  /** First/last actual match inside the window (ISO) — for the summary line. */
+  firstMatch: string | null
+  lastMatch: string | null
+  /** Fixed-count dense buckets across [from, to]. t = bucket start epoch ms. */
   buckets: { t: number; count: number }[]
 }
 
-export async function keywordTimeline(keyword: string, max = 8000): Promise<NewsTimeline> {
+/** Number of bars drawn — fixed so the chart always reads as a dense timeline. */
+const TIMELINE_BARS = 120
+
+export async function keywordTimeline(
+  keyword: string,
+  opts: { rangeMs?: number; sinceMs?: number; untilMs?: number } = {}
+): Promise<NewsTimeline> {
   const kw = keyword.trim()
-  const empty: NewsTimeline = { keyword: kw, total: 0, bucketMs: 0, from: null, to: null, buckets: [] }
+  const empty: NewsTimeline = {
+    keyword: kw,
+    total: 0,
+    bucketMs: 0,
+    from: null,
+    to: null,
+    firstMatch: null,
+    lastMatch: null,
+    buckets: [],
+  }
   if (kw.length < 2) return empty
   return safe(async () => {
     const db = await getDb()
-    // Escape LIKE wildcards so the keyword matches literally.
-    const like = `%${kw.replace(/[\\%_]/g, (m) => "\\" + m)}%`
+    const now = Date.now()
 
-    // Articles whose extracted entities (actor/malware/cve/ttp/sector/region) match.
-    const mentionRows = await db
-      .select({ id: newsMentions.articleId })
-      .from(newsMentions)
-      .where(ilike(newsMentions.value, like))
-      .limit(max)
-    const idSet = new Set(mentionRows.map((m) => m.id))
+    // Resolve the axis window. A rangeMs means "the last N ms, ending now".
+    // Default ("all time") spans the whole archive so a single match reads as
+    // one needle on the full timeline, like a pro tool.
+    let from = opts.rangeMs ? now - opts.rangeMs : (opts.sinceMs ?? null)
+    let to = opts.untilMs ?? now
+    if (from === null) {
+      const span = await db
+        .select({
+          min: sql<string | null>`min(${newsArticles.createdAt})`,
+          max: sql<string | null>`max(${newsArticles.createdAt})`,
+        })
+        .from(newsArticles)
+      from = span[0]?.min ? new Date(span[0].min).getTime() : now - 30 * 86_400_000
+      to = opts.untilMs ?? (span[0]?.max ? new Date(span[0].max).getTime() : now)
+    }
+    if (to <= from) to = from + 86_400_000 // guard: at least a 1-day axis
 
+    const cond = await keywordCondition(db, kw)
     const rows = await db
       .select({ createdAt: newsArticles.createdAt })
       .from(newsArticles)
-      .where(
-        or(
-          ilike(newsArticles.title, like),
-          ilike(newsArticles.summary, like),
-          ilike(newsArticles.source, like),
-          ilike(newsArticles.category, like),
-          ilike(newsArticles.analystNote, like),
-          idSet.size ? inArray(newsArticles.id, [...idSet]) : sql`false`
-        )
-      )
-      .orderBy(desc(newsArticles.createdAt))
-      .limit(max)
+      .where(and(cond, gte(newsArticles.createdAt, new Date(from)), lte(newsArticles.createdAt, new Date(to))))
+      .limit(20_000)
 
-    const times = rows.map((r) => r.createdAt.getTime()).sort((a, b) => a - b)
-    const total = times.length
-    if (total === 0) return empty
-
-    const from = times[0]
-    const to = times[total - 1]
-    const span = Math.max(to - from, 1)
-    const BARS = 56
-    const HOUR = 3_600_000
-    const bucketMs = Math.max(Math.ceil(span / BARS), HOUR) // never finer than 1h
-    const counts = new Map<number, number>()
-    for (const t of times) {
-      const b = Math.floor((t - from) / bucketMs) * bucketMs + from
-      counts.set(b, (counts.get(b) ?? 0) + 1)
+    const N = TIMELINE_BARS
+    const bucketMs = Math.max(Math.ceil((to - from) / N), 60_000)
+    const counts = new Array<number>(N).fill(0)
+    let firstMatch: number | null = null
+    let lastMatch: number | null = null
+    for (const r of rows) {
+      const t = r.createdAt.getTime()
+      const idx = Math.min(N - 1, Math.max(0, Math.floor((t - from) / bucketMs)))
+      counts[idx]++
+      if (firstMatch === null || t < firstMatch) firstMatch = t
+      if (lastMatch === null || t > lastMatch) lastMatch = t
     }
-    const buckets: { t: number; count: number }[] = []
-    for (let b = from; b <= to + bucketMs; b += bucketMs) buckets.push({ t: b, count: counts.get(b) ?? 0 })
 
     return {
       keyword: kw,
-      total,
+      total: rows.length,
       bucketMs,
       from: new Date(from).toISOString(),
       to: new Date(to).toISOString(),
-      buckets,
+      firstMatch: firstMatch ? new Date(firstMatch).toISOString() : null,
+      lastMatch: lastMatch ? new Date(lastMatch).toISOString() : null,
+      buckets: counts.map((count, i) => ({ t: from + i * bucketMs, count })),
     }
   }, empty)
 }
