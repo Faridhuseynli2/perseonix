@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowLeft, KeyRound, Newspaper, Siren } from "lucide-react"
 import { NewsConsole } from "@/components/intel/news-console"
 import { NewsFilters } from "@/components/intel/news-filters"
+import { NewsTimelineSearch } from "@/components/intel/news-timeline-search"
 import { requireModule } from "@/lib/auth/dal"
 import { getConnector, INTEL_MODULE_KEY } from "@/lib/intel/connectors"
 import {
@@ -132,6 +133,8 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
           )}
         </div>
       </header>
+
+      <NewsTimelineSearch tz={tz} />
 
       <NewsFilters facets={facets} savedFilters={saved} />
 
