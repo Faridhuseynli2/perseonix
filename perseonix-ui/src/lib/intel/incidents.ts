@@ -18,7 +18,7 @@ import { ownerOf, type Actor, type Owner } from "@/lib/brand/owner"
 
 type Db = Awaited<ReturnType<typeof getDb>>
 
-// Incident cases for Threat News. Owner is the org (team-wide) or the user.
+// Incident cases for Cyber Threat News. Owner is the org (team-wide) or the user.
 // Degrades to empty/no-op before the tables exist (until one dev-server restart).
 
 function isSchemaNotReady(error: unknown): boolean {
@@ -224,7 +224,7 @@ export async function createIncidentFromArticle(user: Actor, articleId: string):
         openedByName: authorName,
       })
       await logEvent(db, c.id, "created", {
-        body: `Incident opened from Threat News: “${a.title}”.`,
+        body: `Incident opened from Cyber Threat News: “${a.title}”.`,
         authorId: user.id,
         authorName,
       })

@@ -28,7 +28,7 @@ export const INGEST_CONNECTORS: IngestConnector[] = [
   },
   {
     key: "news",
-    name: "Threat News",
+    name: "Cyber Threat News",
     moduleKey: "intel",
     href: "/app/modules/intel/news",
     endpoint: "/api/ingest/v1/news",

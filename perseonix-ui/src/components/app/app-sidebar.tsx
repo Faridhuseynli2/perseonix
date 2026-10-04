@@ -41,7 +41,7 @@ const moduleChildren: Record<string, NavItem[]> = {
   intel: [
     { href: "/app/modules/intel", label: "Dashboard", icon: LayoutGrid },
     { href: "/app/modules/intel/cve", label: "CVE Feed", icon: Bug },
-    { href: "/app/modules/intel/news", label: "Threat News", icon: Newspaper },
+    { href: "/app/modules/intel/news", label: "Cyber Threat News", icon: Newspaper },
   ],
   brand: [{ href: "/app/modules/brand/cases", label: "Incident Cases", icon: FolderKanban }],
 }

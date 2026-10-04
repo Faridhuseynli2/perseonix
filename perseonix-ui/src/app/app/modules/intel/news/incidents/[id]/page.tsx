@@ -34,7 +34,7 @@ import { getIncident, type IncidentEvent } from "@/lib/intel/incidents"
 
 export async function generateMetadata({ params }: PageProps<"/app/modules/intel/news/incidents/[id]">): Promise<Metadata> {
   const { id } = await params
-  return { title: "Incident · Threat News", description: id }
+  return { title: "Incident · Cyber Threat News", description: id }
 }
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" })
@@ -234,7 +234,7 @@ export default async function IncidentDetailPage({ params }: PageProps<"/app/mod
                   href={`/app/modules/intel/news?a=${encodeURIComponent(c.articleId)}`}
                   className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-ink/12 bg-ink/[0.03] px-3 py-2 text-sm text-foreground/90 transition-colors hover:bg-ink/[0.07] hover:text-ink"
                 >
-                  Open in Threat News
+                  Open in Cyber Threat News
                   <ArrowUpRight className="size-3.5" />
                 </Link>
               )}

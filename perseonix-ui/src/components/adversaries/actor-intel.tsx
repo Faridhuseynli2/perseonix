@@ -54,7 +54,7 @@ export function ActorIntel({
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-ink"
       >
         <ArrowLeft className="size-4" />
-        Threat News
+        Cyber Threat News
       </Link>
 
       {/* header */}
@@ -133,7 +133,7 @@ export function ActorIntel({
 
           {articles.length === 0 ? (
             <p className="mt-4 rounded-lg border border-dashed border-ink/12 bg-navy-900/30 px-4 py-10 text-center text-sm text-muted-foreground">
-              No news intelligence yet for {displayName}. It will appear here as the Threat News feed ingests mentions.
+              No news intelligence yet for {displayName}. It will appear here as the Cyber Threat News feed ingests mentions.
             </p>
           ) : (
             <ul className="mt-3 grid gap-2.5">

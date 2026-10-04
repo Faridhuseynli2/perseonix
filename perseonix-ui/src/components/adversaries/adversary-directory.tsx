@@ -203,7 +203,7 @@ export function AdversaryDirectory({
         {osintActors.length > 0 && (
           <div className="mt-4 rounded-xl border border-glow/20 bg-glow/[0.03] p-4">
             <p className="flex items-center gap-2 font-mono text-[10px] font-semibold tracking-[0.14em] text-glow uppercase">
-              <Target className="size-3.5" /> OSINT-tracked · from Threat News
+              <Target className="size-3.5" /> OSINT-tracked · from Cyber Threat News
               <span className="font-normal text-muted-foreground/50">{osintActors.length}</span>
             </p>
             <p className="mt-1 text-[12px] text-muted-foreground">

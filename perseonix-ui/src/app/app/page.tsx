@@ -115,7 +115,7 @@ export default async function CommandCenter() {
 
   const tiles = [
     { label: "CVE Feed", value: n(cstats.total), sub: `${cstats.kev} exploited`, href: "/app/modules/intel/cve", icon: Bug },
-    { label: "Threat News", value: n(nstats.total), sub: `${nstats.last24h} today`, href: "/app/modules/intel/news", icon: Newspaper },
+    { label: "Cyber Threat News", value: n(nstats.total), sub: `${nstats.last24h} today`, href: "/app/modules/intel/news", icon: Newspaper },
     { label: "Ransomware", value: n(live.last24h), sub: "victims · 24h", href: "/app/modules/ransomware", icon: Skull },
     { label: "Adversaries", value: n(adv.groups), sub: "tracked actors", href: "/app/modules/adversaries", icon: Crosshair },
     { label: "Brand", value: n(detections.length), sub: "lookalikes", href: "/app/modules/brand", icon: ShieldCheck },

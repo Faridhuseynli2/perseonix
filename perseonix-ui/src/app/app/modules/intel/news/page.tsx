@@ -17,7 +17,7 @@ import {
 } from "@/lib/intel/news"
 import { getOrgContext, scoreArticles } from "@/lib/intel/news-relevance"
 
-export const metadata: Metadata = { title: "Threat News · Threat Intelligence" }
+export const metadata: Metadata = { title: "Cyber Threat News · Threat Intelligence" }
 
 const RANGE_MIN: Record<string, number> = { "1h": 60, "24h": 1440, "3d": 4320, "7d": 10080, "30d": 43200 }
 
@@ -88,10 +88,10 @@ export default async function ThreatNewsPage({ searchParams }: PageProps<"/app/m
 
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Threat Intelligence // Threat News</p>
+          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Threat Intelligence // Cyber Threat News</p>
           <h1 className="mt-2 flex items-center gap-2.5 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
             <Newspaper className="size-6 text-glow" />
-            Threat News
+            Cyber Threat News
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
             <span>{stats.total} articles</span>

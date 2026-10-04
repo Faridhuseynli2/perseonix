@@ -13,7 +13,7 @@ import { INTEL_MODULE_KEY } from "@/lib/intel/connectors"
 import { incidentNumber } from "@/lib/intel/incidents-meta"
 import { incidentStats, listIncidents } from "@/lib/intel/incidents"
 
-export const metadata: Metadata = { title: "Incidents · Threat News" }
+export const metadata: Metadata = { title: "Incidents · Cyber Threat News" }
 
 function ago(iso: string): string {
   const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
@@ -50,7 +50,7 @@ export default async function IncidentsPage({ searchParams }: PageProps<"/app/mo
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-ink"
       >
         <ArrowLeft className="size-4" />
-        Threat News
+        Cyber Threat News
       </Link>
 
       {/* Masthead */}
@@ -101,7 +101,7 @@ export default async function IncidentsPage({ searchParams }: PageProps<"/app/mo
             {status ? "No incidents in this state." : "No incidents yet."}
           </p>
           <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-muted-foreground/70">
-            When a Threat News item warrants a closer look, open an incident from it — or start one with “New incident”.
+            When a Cyber Threat News item warrants a closer look, open an incident from it — or start one with “New incident”.
             Pick a severity and Perseonix sets the response SLA automatically.
           </p>
         </div>
