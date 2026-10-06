@@ -11,7 +11,7 @@ export function AttackMap({ points }: { points: MapPoint[] }) {
     <figure className="relative overflow-hidden rounded-lg border border-ink/[0.09] bg-navy-900/40">
       <figcaption className="flex items-center justify-between gap-2 border-b border-ink/[0.07] px-4 py-3">
         <span className="flex items-center gap-2 font-mono text-[11px] font-semibold tracking-[0.15em] text-ink uppercase">
-          <span aria-hidden className="size-1.5 rounded-full bg-sev-critical motion-safe:animate-beacon" />
+          <span aria-hidden className="size-1.5 rounded-full bg-sev-critical" />
           Global surface
         </span>
         <span className="font-mono text-[10px] tracking-wider text-muted-foreground/55 uppercase">
@@ -34,12 +34,6 @@ export function AttackMap({ points }: { points: MapPoint[] }) {
               <title>{`${h.name}: ${h.count}`}</title>
             </circle>
           </g>
-        ))}
-        {top.map((h) => (
-          <circle key={`pulse-${h.code}`} cx={h.x} cy={h.y} r={h.r} fill="none" stroke={ACCENT} strokeWidth={1}>
-            <animate attributeName="r" values={`${h.r};${h.r + 8}`} dur="2.2s" repeatCount="indefinite" />
-            <animate attributeName="stroke-opacity" values="0.6;0" dur="2.2s" repeatCount="indefinite" />
-          </circle>
         ))}
       </svg>
       {top.length > 0 && (

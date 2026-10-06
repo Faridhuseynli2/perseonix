@@ -107,16 +107,15 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
     layer.clearLayers()
     if (!showRansomware) return
 
-    points.forEach((p, i) => {
+    points.forEach((p) => {
       const size = Math.round(10 + (Math.sqrt(p.count) / Math.sqrt(max)) * 22)
       const isActive = p.code === activeCode
-      const pulse = i < 8
       const color = tierColor(p.count, max)
       const icon = L.divIcon({
         className: "",
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
-        html: `<span class="threat-dot${isActive ? " threat-dot--active" : ""}${pulse ? " threat-dot--pulse" : ""}" style="display:block;width:${size}px;height:${size}px;color:${color}"></span>`,
+        html: `<span class="threat-dot${isActive ? " threat-dot--active" : ""}" style="display:block;width:${size}px;height:${size}px;color:${color}"></span>`,
       })
       const marker = L.marker([p.lat, p.lng], { icon, keyboard: false })
       marker.bindTooltip(`${p.name}: ${p.count.toLocaleString()}`, {
@@ -135,7 +134,7 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
 
       {/* title */}
       <div className="pointer-events-none absolute top-3 right-3 z-[500] flex items-center gap-2 rounded-md bg-navy-950/70 px-2.5 py-1 font-mono text-[10px] tracking-[0.16em] text-muted-foreground/80 uppercase backdrop-blur-sm">
-        <span aria-hidden className="size-1.5 rounded-full bg-sev-critical motion-safe:animate-beacon" />
+        <span aria-hidden className="size-1.5 rounded-full bg-sev-critical" />
         {points.length} countries
       </div>
 
