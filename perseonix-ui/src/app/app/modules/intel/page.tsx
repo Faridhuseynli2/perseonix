@@ -133,10 +133,7 @@ export default async function ThreatCommandPage({ searchParams }: PageProps<"/ap
       </div>
 
       {/* Full-bleed threat map */}
-      <ThreatMap
-        points={geo}
-        victims={victims.map((v) => ({ id: v.id, groupName: v.groupName, victim: v.victim, country: v.country, discovered: v.discovered }))}
-      />
+      <ThreatMap points={geo} />
 
       {/* Live intel wall */}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">

@@ -2,9 +2,8 @@
 
 import "leaflet/dist/leaflet.css"
 import { useEffect, useMemo, useRef, useState } from "react"
-import Link from "next/link"
 import type { LayerGroup, Map as LeafletMap } from "leaflet"
-import { ArrowUpRight, Layers, X } from "lucide-react"
+import { Layers } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // Real tile map (Leaflet + free CARTO dark basemap) — a proper geographic
@@ -13,16 +12,6 @@ import { cn } from "@/lib/utils"
 // principle). Leaflet is loaded only in the browser (SSR-safe).
 
 export type GeoPoint = { code: string; name: string; lat: number; lng: number; count: number }
-export type MapVictim = { id: string; groupName: string; victim: string; country: string | null; discovered: string | null }
-
-function ago(iso: string | null): string {
-  if (!iso) return ""
-  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
-  if (m < 60) return `${Math.max(1, m)}m`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h`
-  return `${Math.floor(h / 24)}d`
-}
 
 const LAYER_DEFS = [
   { key: "ransomware", label: "Ransomware victims", color: "#ff8a3d" },
@@ -43,22 +32,16 @@ function tierColor(count: number, max: number): string {
   return (SEV_TIERS.find((t) => r >= t.min) ?? SEV_TIERS[SEV_TIERS.length - 1]).color
 }
 
-export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: MapVictim[] }) {
+export function ThreatMap({ points }: { points: GeoPoint[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<LeafletMap | null>(null)
   const layerRef = useRef<LayerGroup | null>(null)
   const LRef = useRef<typeof import("leaflet") | null>(null)
 
   const [ready, setReady] = useState(false)
-  const [activeCode, setActiveCode] = useState<string | null>(points[0]?.code ?? null)
   const [showRansomware, setShowRansomware] = useState(true)
 
   const max = useMemo(() => Math.max(1, ...points.map((p) => p.count)), [points])
-  const active = points.find((p) => p.code === activeCode) ?? null
-  const activeVictims = useMemo(
-    () => (active ? victims.filter((v) => v.country === active.code).slice(0, 5) : []),
-    [active, victims]
-  )
 
   // Init map once (client only).
   useEffect(() => {
@@ -109,13 +92,12 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
 
     points.forEach((p) => {
       const size = Math.round(10 + (Math.sqrt(p.count) / Math.sqrt(max)) * 22)
-      const isActive = p.code === activeCode
       const color = tierColor(p.count, max)
       const icon = L.divIcon({
         className: "",
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
-        html: `<span class="threat-dot${isActive ? " threat-dot--active" : ""}" style="display:block;width:${size}px;height:${size}px;color:${color}"></span>`,
+        html: `<span class="threat-dot" style="display:block;width:${size}px;height:${size}px;color:${color}"></span>`,
       })
       const marker = L.marker([p.lat, p.lng], { icon, keyboard: false })
       marker.bindTooltip(`${p.name}: ${p.count.toLocaleString()}`, {
@@ -123,10 +105,9 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
         direction: "top",
         offset: [0, -size / 2 - 2],
       })
-      marker.on("click", () => setActiveCode(p.code))
       marker.addTo(layer)
     })
-  }, [ready, points, showRansomware, activeCode, max])
+  }, [ready, points, showRansomware, max])
 
   return (
     <figure className="relative h-[64vh] min-h-[440px] overflow-hidden rounded-lg border border-ink/[0.09] bg-navy-950/60">
@@ -172,42 +153,6 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
           })}
         </ul>
       </div>
-
-      {/* detail panel */}
-      {active && (
-        <div className="absolute right-3 bottom-8 z-[500] w-[230px] rounded-lg border border-sev-critical/25 bg-navy-950/85 p-3 backdrop-blur-sm">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground/60 uppercase">Selected</p>
-              <p className="truncate text-sm font-semibold text-ink">{active.name}</p>
-            </div>
-            <button type="button" onClick={() => setActiveCode(null)} className="text-muted-foreground hover:text-ink" aria-label="Clear">
-              <X className="size-3.5" />
-            </button>
-          </div>
-          <p className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-xl font-semibold tabular-nums" style={{ color: tierColor(active.count, max) }}>
-              {active.count.toLocaleString()}
-            </span>
-            <span className="text-[11px] text-muted-foreground">claimed victims</span>
-          </p>
-          {activeVictims.length > 0 && (
-            <ul className="mt-2 grid gap-1 border-t border-ink/[0.07] pt-2">
-              {activeVictims.map((v) => (
-                <li key={v.id} className="flex items-center justify-between gap-2 text-[11px]">
-                  <span className="min-w-0 truncate text-foreground/85" title={v.victim}>
-                    <span className="text-sev-critical/90">{v.groupName}</span> · {v.victim}
-                  </span>
-                  <span className="shrink-0 font-mono text-[10px] text-muted-foreground/60">{ago(v.discovered)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <Link href="/app/modules/ransomware" className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-medium text-glow hover:text-ink">
-            Open in Ransomware Tracker <ArrowUpRight className="size-3" />
-          </Link>
-        </div>
-      )}
 
       {/* legend — severity key */}
       <div className="pointer-events-none absolute bottom-2.5 left-1/2 z-[500] flex -translate-x-1/2 flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md bg-navy-950/70 px-3 py-1 font-mono text-[10px] text-muted-foreground/75 backdrop-blur-sm">

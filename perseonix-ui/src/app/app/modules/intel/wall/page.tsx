@@ -68,10 +68,7 @@ export default async function ThreatWallPage() {
 
         {/* Map + primary stream */}
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <ThreatMap
-            points={geo}
-            victims={victims.map((v) => ({ id: v.id, groupName: v.groupName, victim: v.victim, country: v.country, discovered: v.discovered }))}
-          />
+          <ThreatMap points={geo} />
           <FeedCol title="Ransomware victims" count={victims.length} live>
             {victims.length === 0 ? (
               <div className="px-3 py-6 text-center text-[11px] text-muted-foreground/60">No claimed victims in the window.</div>
