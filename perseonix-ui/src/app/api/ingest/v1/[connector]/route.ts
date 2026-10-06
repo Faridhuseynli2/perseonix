@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { ingestFrontline, type FrontlineInput } from "@/lib/frontline/data"
 import { getConnector } from "@/lib/intel/connectors"
 import { ingestCves, logIngestRun, type CveInput } from "@/lib/intel/cve"
 import { ingestNews, type NewsInput } from "@/lib/intel/news"
@@ -83,6 +84,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ connector: str
         skipped: res.updated + res.dropped + res.duplicates,
         status: "ok",
         message: `added ${res.added}, updated ${res.updated}, duplicates ${res.duplicates}, dropped ${res.dropped}`,
+      })
+      return NextResponse.json({ ok: true, connector, ...res })
+    }
+    if (connector === "frontline") {
+      const res = await ingestFrontline(items as FrontlineInput[])
+      await logIngestRun("frontline", {
+        received: res.received,
+        added: res.added,
+        skipped: res.updated + res.dropped + res.duplicates,
+        status: "ok",
+        message: `added ${res.added}, duplicates ${res.duplicates}, dropped ${res.dropped}`,
       })
       return NextResponse.json({ ok: true, connector, ...res })
     }

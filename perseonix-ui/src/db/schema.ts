@@ -912,3 +912,38 @@ export type UserRole = (typeof userRole.enumValues)[number]
 export type UserStatus = (typeof userStatus.enumValues)[number]
 export type CustomerPlan = (typeof customerPlan.enumValues)[number]
 export type AuditLog = typeof auditLogs.$inferSelect
+
+// ── Frontline — live Russia–Ukraine conflict monitor ────────────────────────
+// War events pushed by an n8n playbook (Telegram OSINT + news), each carrying
+// OUR short summary. A flat, append-mostly event log that powers a minute-by-
+// minute feed, a timeline and a map. Degrades to empty before the table exists.
+export const frontlineEvents = pgTable(
+  "frontline_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    externalId: text("external_id"), // optional source id
+    title: text("title").notNull(),
+    summary: text("summary"), // OUR short summary (never the full source text)
+    analystNote: text("analyst_note"), // optional "so-what" assessment
+    dedupKey: text("dedup_key"), // normalized-title fingerprint for dedupe
+    category: text("category"), // strike|ground|air|naval|drone|diplomacy|humanitarian|cyber|economic|other
+    severity: text("severity"), // critical|high|medium|low|info
+    side: text("side"), // RU | UA | both | other — who the event concerns/is attributed to
+    region: text("region"), // e.g. "Donetsk Oblast", "Kharkiv"
+    country: text("country"), // ISO-2 (UA | RU | …)
+    lat: real("lat"),
+    lng: real("lng"),
+    source: text("source"), // e.g. "ISW", "DeepState", "Reuters"
+    url: text("url"),
+    happenedAt: timestamp("happened_at", { withTimezone: true }), // when it occurred (source time)
+    createdAt: createdAt(), // when it landed on our platform
+  },
+  (t) => [
+    index("frontline_events_created_idx").on(t.createdAt),
+    index("frontline_events_happened_idx").on(t.happenedAt),
+    index("frontline_events_category_idx").on(t.category),
+    index("frontline_events_severity_idx").on(t.severity),
+    index("frontline_events_dedup_idx").on(t.dedupKey),
+  ]
+)
+export type FrontlineEvent = typeof frontlineEvents.$inferSelect

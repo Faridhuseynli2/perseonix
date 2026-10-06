@@ -35,6 +35,15 @@ export const INGEST_CONNECTORS: IngestConnector[] = [
     description:
       "Security-news articles pushed by an n8n playbook, each LLM-summarised and entity-extracted (CVEs, threat actors, malware, MITRE TTPs, sectors, regions).",
   },
+  {
+    key: "frontline",
+    name: "Frontline",
+    moduleKey: "frontline",
+    href: "/app/modules/frontline",
+    endpoint: "/api/ingest/v1/frontline",
+    description:
+      "Russia–Ukraine conflict events pushed by an n8n playbook (Telegram OSINT + news), each short-summarised with category, severity, region and optional coordinates for the live feed, timeline and map.",
+  },
 ]
 
 export function getConnector(key: string): IngestConnector | undefined {

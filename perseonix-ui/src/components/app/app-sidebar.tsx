@@ -23,6 +23,7 @@ import {
   Settings,
   ShieldCheck,
   Skull,
+  Swords,
   Users,
   VenetianMask,
   type LucideIcon,
@@ -54,6 +55,7 @@ const moduleIcons: Record<string, LucideIcon> = {
   ransomware: Skull,
   brand: ShieldCheck,
   credentials: KeyRound,
+  frontline: Swords,
 }
 
 const workspaceItems: NavItem[] = [

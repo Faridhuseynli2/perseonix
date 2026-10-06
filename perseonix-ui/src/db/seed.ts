@@ -55,6 +55,13 @@ const MODULE_CATALOG = [
       "Check whether a password or email address appears in known data breaches. Passwords are hashed in your browser and never sent — plaintext is never shown.",
     sortOrder: 60,
   },
+  {
+    key: "frontline",
+    name: "Frontline",
+    description:
+      "Live Russia–Ukraine conflict monitor: a minute-by-minute feed of battlefield, strike, diplomatic and humanitarian events, summarised and mapped from OSINT and news ingested by an n8n playbook.",
+    sortOrder: 70,
+  },
 ]
 
 export async function seedDatabase(db: Database) {
