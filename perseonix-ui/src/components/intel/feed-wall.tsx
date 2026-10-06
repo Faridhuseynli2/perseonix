@@ -39,7 +39,7 @@ export function FeedCol({
           )}
           {live ? (
             <span className="inline-flex items-center gap-1 font-mono text-[8px] tracking-wide text-glow uppercase">
-              <span aria-hidden className="size-1 rounded-full bg-glow motion-safe:animate-beacon" /> live
+              live
             </span>
           ) : (
             <span className="font-mono text-[8px] tracking-wide text-muted-foreground/40 uppercase">idle</span>

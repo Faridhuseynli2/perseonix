@@ -220,11 +220,6 @@ export function ThreatMap({ points, victims }: { points: GeoPoint[]; victims: Ma
         <span className="text-muted-foreground/45">· size = victims</span>
       </div>
 
-      {/* minimal required map credit (OSM/Esri licensing) */}
-      <div className="pointer-events-none absolute right-1.5 bottom-1 z-[500] font-mono text-[8px] tracking-wide text-muted-foreground/30">
-        © Esri · OpenStreetMap
-      </div>
-
       {!ready && (
         <div className="absolute inset-0 z-[400] grid place-items-center text-xs text-muted-foreground/60">Loading map…</div>
       )}

@@ -117,7 +117,6 @@ export function ThreatScope({
     <figure className="relative overflow-hidden rounded-lg border border-ink/[0.09] bg-navy-950/40">
       <figcaption className="flex items-center justify-between border-b border-ink/[0.07] px-4 py-3">
         <span className="flex items-center gap-2 font-mono text-[11px] font-semibold tracking-[0.18em] text-ink uppercase">
-          <span aria-hidden className="size-1.5 rounded-full bg-sev-critical motion-safe:animate-beacon" />
           Impersonation threat scope
         </span>
         <span className="font-mono text-[10px] tracking-wider text-muted-foreground/55 uppercase">

@@ -31,7 +31,7 @@ export function Wallboard({ children, tz = "UTC" }: { children: React.ReactNode;
             Threat Wall
           </span>
           <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-glow uppercase">
-            <span aria-hidden className="size-2 rounded-full bg-glow motion-safe:animate-beacon" /> Live
+            Live
           </span>
         </div>
         <div className="flex items-center gap-4">

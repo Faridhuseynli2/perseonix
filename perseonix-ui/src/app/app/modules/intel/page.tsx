@@ -102,7 +102,7 @@ export default async function ThreatCommandPage({ searchParams }: PageProps<"/ap
                   {r.key === "live" && (
                     <span
                       aria-hidden
-                      className={cn("size-1.5 rounded-full", active ? "bg-glow motion-safe:animate-beacon" : "bg-muted-foreground/40")}
+                      className={cn("size-1.5 rounded-full", active ? "bg-glow" : "bg-muted-foreground/40")}
                     />
                   )}
                   {r.label}

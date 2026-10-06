@@ -50,7 +50,6 @@ export default async function BrandProtectionPage() {
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5 font-semibold text-glow">
-              <span aria-hidden className="size-1.5 rounded-full bg-glow motion-safe:animate-beacon" />
               WATCHING
             </span>
             <span aria-hidden className="text-muted-foreground/30">/</span>
