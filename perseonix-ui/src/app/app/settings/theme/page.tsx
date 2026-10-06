@@ -13,7 +13,7 @@ export default async function ThemeSettingsPage() {
   return (
     <Panel
       title="Theme"
-      description="Choose how Perseonix Corvael looks for you. Your choice is saved to your account and follows you to every device."
+      description="Applies to this account on all devices."
     >
       <ThemePicker current={user.theme} />
     </Panel>

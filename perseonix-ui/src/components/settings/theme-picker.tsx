@@ -125,7 +125,7 @@ export function ThemePicker({ current }: { current: Theme }) {
         </div>
       </fieldset>
       <p aria-live="polite" className="text-xs text-muted-foreground">
-        {pending ? "Saving…" : "Changes apply instantly and are saved to your account."}
+        {pending ? "Saving…" : "Saved to your account."}
       </p>
     </div>
   )

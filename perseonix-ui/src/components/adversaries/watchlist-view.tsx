@@ -48,7 +48,7 @@ export function WatchlistView({ actors }: { actors: WatchedActor[] }) {
       {actors.length === 0 ? (
         <div className="mt-6">
           <EmptyState
-            title="You're not following anyone yet"
+            title="No actors on your watchlist"
             body="Open a threat actor and hit “Watch actor” to get alerted when new activity is reported."
           />
           <div className="mt-4 text-center">

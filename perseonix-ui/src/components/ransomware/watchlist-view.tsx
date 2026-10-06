@@ -22,7 +22,7 @@ export function RansomwareWatchlistView({ watches }: { watches: RansomwareWatch[
       <header className="mt-4 flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
           <p className="font-mono text-[10px] tracking-[0.22em] text-sev-critical/90 uppercase">
-            Perseonix Corvael // Ransomware Ops
+            Ransomware // Watchlist
           </p>
           <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-ink lg:text-3xl">
             My ransomware watchlist

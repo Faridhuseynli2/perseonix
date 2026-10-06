@@ -33,10 +33,12 @@ export default async function InvestigatePage({
     <div className="mx-auto max-w-[1400px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="eyebrow text-glow">Module</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{module.name}</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Investigate domains, IP addresses and URLs across {enabledCount} intelligence sources.
+          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Threat Investigation</p>
+          <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
+            {module.name}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Domains, IPs and URLs · {enabledCount} sources.
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -45,7 +47,7 @@ export default async function InvestigatePage({
             className="inline-flex h-9 items-center gap-1.5 rounded-md border border-ink/12 bg-ink/[0.03] px-3.5 text-sm font-medium text-foreground/90 transition-colors hover:border-sev-critical/40 hover:bg-ink/[0.07] hover:text-ink"
           >
             <Crosshair className="size-4 text-sev-critical" />
-            Talon · C2 Hunting
+            C2 Hunting
           </Link>
           <Link
             href="/app/modules/investigate/graph"
@@ -57,7 +59,7 @@ export default async function InvestigatePage({
         </div>
       </div>
 
-      <section className="relative mt-8 overflow-hidden rounded-2xl border border-ink/[0.07] bg-navy-800/60 p-6 lg:p-8">
+      <section className="relative mt-8 overflow-hidden rounded-xl border border-ink/[0.07] bg-navy-800/60 p-6 lg:p-8">
         <div aria-hidden className="dot-backdrop pointer-events-none absolute inset-0 opacity-50" />
         <div className="relative">
           <InvestigateForm initialQuery={typeof q === "string" ? q.slice(0, 2048) : ""} />
@@ -160,7 +162,7 @@ export default async function InvestigatePage({
                   <div
                     className={cn(
                       "h-full rounded-full",
-                      percent >= 90 ? "bg-signal" : "bg-linear-to-r from-brand to-glow"
+                      percent >= 90 ? "bg-signal" : "bg-glow"
                     )}
                     style={{ width: `${percent}%` }}
                   />

@@ -12,8 +12,8 @@ export default function AppNotFound() {
         This area isn&apos;t available
       </h1>
       <p className="mt-2 max-w-md text-sm text-muted-foreground">
-        The page doesn&apos;t exist, or your account doesn&apos;t have access to it. Ask a
-        Perseonix administrator if you think you should.
+        This page doesn&apos;t exist or isn&apos;t licensed to your account. Contact your Perseonix
+        administrator for access.
       </p>
       <Link href="/app" className={cn(buttonVariants(), "mt-8 h-10 gap-2 rounded-md px-5")}>
         <ArrowLeft />

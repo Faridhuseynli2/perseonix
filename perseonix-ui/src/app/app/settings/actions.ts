@@ -20,7 +20,7 @@ export async function updateTheme(theme: string): Promise<{ error?: string }> {
 
 export async function updateTimezone(tz: string): Promise<{ error?: string }> {
   const user = await requireUser()
-  if (!isValidTimeZone(tz)) return { error: "That timezone isn't recognised." }
+  if (!isValidTimeZone(tz)) return { error: "That timezone isn't recognized." }
 
   const db = await getDb()
   try {

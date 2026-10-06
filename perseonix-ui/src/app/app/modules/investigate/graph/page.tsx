@@ -25,15 +25,15 @@ export default async function InvestigateGraphPage({ searchParams }: PageProps<"
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
           <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">
-            Perseonix Corvael // Infrastructure Graph
+            Threat Investigation // Infrastructure Graph
           </p>
           <h1 className="mt-2 flex items-center gap-2.5 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
             <Share2 className="size-6 text-glow" />
             Infrastructure Graph
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Map and pivot through an adversary&apos;s live infrastructure — DNS, shared TLS certificates, hosting networks,
-            exposed services and threat verdicts — fused from Shodan, crt.sh, RDAP, DNS and abuse feeds.
+            Pivot an adversary&apos;s infrastructure: DNS, shared TLS certificates, hosting, exposed services and
+            verdicts. Sources: Shodan, crt.sh, RDAP, URLhaus.
           </p>
         </div>
       </header>

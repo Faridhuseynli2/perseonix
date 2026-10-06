@@ -56,7 +56,7 @@ export default async function IncidentsPage({ searchParams }: PageProps<"/app/mo
       {/* Masthead */}
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Perseonix Corvael // Incidents</p>
+          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Cyber Threat News // Incidents</p>
           <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
             Incidents
           </h1>

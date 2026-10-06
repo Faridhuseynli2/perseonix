@@ -70,7 +70,6 @@ export default async function ThreatCommandPage({ searchParams }: PageProps<"/ap
     { label: "Tracked actors", value: n(adv.groups) },
     { label: "Brand exposure", value: n(brand.length) },
     { label: "CVEs · KEV", value: cstats.total ? `${n(cstats.total)}` : "—", hot: cstats.kev > 0, muted: !cstats.total },
-    { label: "IOC feed", value: "—", muted: true },
   ]
 
   return (
@@ -82,7 +81,7 @@ export default async function ThreatCommandPage({ searchParams }: PageProps<"/ap
         <div className="flex items-center gap-2.5">
           <Radar className="size-4 text-glow" />
           <span className="font-mono text-[11px] font-semibold tracking-[0.2em] text-ink uppercase">
-            Perseonix Corvael<span className="text-muted-foreground/40">{" // "}</span>Threat Monitor
+            Threat Monitor
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
@@ -230,14 +229,10 @@ export default async function ThreatCommandPage({ searchParams }: PageProps<"/ap
             </Rows>
           )}
         </FeedCol>
-
-        <FeedCol title="IOC feed">
-          <Awaiting href="/app/modules/intel" label="IOC feed coming soon" icon={Radar} />
-        </FeedCol>
       </div>
 
       <p className="border-t border-ink/[0.07] pt-3 font-mono text-[10px] leading-relaxed text-muted-foreground/55">
-        Sources: ransomware.live · Brand Protection. CVE / IOC / news activate with their ingestion connectors.
+        Sources: ransomware.live · Brand Protection. CVE and news feeds activate with their ingestion connectors.
       </p>
     </div>
   )

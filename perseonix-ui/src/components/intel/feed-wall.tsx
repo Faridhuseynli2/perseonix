@@ -7,6 +7,17 @@ import type { RankRow } from "@/lib/ransomware/data"
 
 const n = (x: number) => x.toLocaleString("en-US")
 
+// Color a row tag by its severity when it is one; neutral for names/sources.
+const TAG_TONE: Record<string, string> = {
+  critical: "text-sev-critical",
+  kev: "text-sev-critical",
+  high: "text-sev-high",
+  medium: "text-sev-medium",
+  low: "text-sev-low",
+  info: "text-muted-foreground/70",
+}
+const tagTone = (tag: string) => TAG_TONE[tag.trim().toLowerCase()] ?? "text-muted-foreground/70"
+
 export function FeedCol({
   title,
   count,
@@ -67,7 +78,7 @@ export function StreamRow({
           <span className="shrink-0 font-mono text-[9px] text-muted-foreground/55 tabular-nums">{time}</span>
         </div>
         <p className="mt-0.5 truncate font-mono text-[10px] text-muted-foreground/70">
-          <span className="text-sev-critical/85 uppercase">{tag}</span>
+          <span className={`${tagTone(tag)} uppercase`}>{tag}</span>
           {meta && <span> · {meta}</span>}
         </p>
       </Link>
@@ -76,7 +87,7 @@ export function StreamRow({
 }
 
 export function RankRows({ rows, render }: { rows: RankRow[]; render: (r: RankRow) => string }) {
-  if (rows.length === 0) return <Empty>No data yet.</Empty>
+  if (rows.length === 0) return <Empty>Nothing ranked yet.</Empty>
   return (
     <ul className="divide-y divide-ink/[0.05]">
       {rows.map((r, i) => (

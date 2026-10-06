@@ -13,7 +13,7 @@ export default async function TimezoneSettingsPage() {
   return (
     <Panel
       title="Timezone"
-      description="All dates and times across Perseonix Corvael — when a CVE was published, when a victim was claimed, when an alert fired — are shown in this timezone. Saved to your account and used on every device."
+      description="All timestamps display in this timezone. Saved to your account, used on every device."
     >
       <TimezonePicker current={user.timezone} />
     </Panel>

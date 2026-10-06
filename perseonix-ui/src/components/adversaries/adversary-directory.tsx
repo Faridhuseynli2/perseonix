@@ -54,7 +54,7 @@ export function AdversaryDirectory({
   return (
     <div className="mx-auto max-w-[1400px]">
       {/* Command masthead */}
-      <section className="hud-corners relative overflow-hidden rounded-2xl border border-ink/[0.08] bg-navy-900/70">
+      <section className="hud-corners relative overflow-hidden rounded-xl border border-ink/[0.08] bg-navy-900/70">
         <div aria-hidden className="hud-grid fade-mask-top pointer-events-none absolute inset-0 opacity-60" />
         <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-72 opacity-[0.15]">
           <div className="radar-rings size-full rounded-full" />
@@ -62,18 +62,18 @@ export function AdversaryDirectory({
         <div className="relative grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-8">
           <div>
             <p className="eyebrow flex items-center gap-2 text-[10px] text-glow">
-              <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow motion-safe:animate-beacon" />
-              Perseonix Corvael // Adversary Intelligence
+              <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow" />
+              Adversary Intelligence
             </p>
             <div className="mt-3 flex items-center gap-4">
               <AdversaryMark className="size-12" />
               <h1 className="font-display text-3xl font-semibold tracking-tight text-ink lg:text-4xl">
-                Know your enemy
+                Adversaries
               </h1>
             </div>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              A living dossier of the threat actors that matter — APT crews, ransomware operators and
-              hacktivists. Track their aliases, arsenals, targets and the operations attributed to them.
+              Tracked threat actors: APTs, ransomware operators and hacktivists. Aliases, tooling, targets
+              and attributed operations.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <Link
@@ -104,7 +104,7 @@ export function AdversaryDirectory({
             {counters.map((counter) => (
               <div key={counter.label}>
                 <dt className="eyebrow flex items-center gap-1.5 text-[10px] text-muted-foreground/70">
-                  {counter.live && <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow motion-safe:animate-beacon" />}
+                  {counter.live && <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow" />}
                   {counter.label}
                 </dt>
                 <dd className={cn("mt-1 font-mono text-3xl font-semibold tabular-nums", counter.live ? "text-glow" : "text-ink")}>
@@ -117,7 +117,7 @@ export function AdversaryDirectory({
       </section>
 
       {/* Threat landscape */}
-      <section className="mt-4 rounded-2xl border border-ink/[0.07] bg-navy-800/50 p-5 lg:p-6">
+      <section className="mt-4 rounded-xl border border-ink/[0.07] bg-navy-800/50 p-5 lg:p-6">
         <div className="flex items-center justify-between gap-3">
           <p className="eyebrow text-[10px] text-muted-foreground/70">Threat landscape · by origin</p>
           {region && (

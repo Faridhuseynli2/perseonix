@@ -15,7 +15,7 @@ import { isIP } from "node:net"
 
 export async function generateMetadata({ params }: PageProps<"/app/modules/investigate/c2/[ip]">): Promise<Metadata> {
   const { ip } = await params
-  return { title: `${ip} · Talon C2` }
+  return { title: `${ip} · C2 Hunting` }
 }
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" })
@@ -62,7 +62,7 @@ export default async function C2IpPage({ params }: PageProps<"/app/modules/inves
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-ink"
       >
         <ArrowLeft className="size-4" />
-        Talon · C2 Hunting
+        C2 Hunting
       </Link>
 
       {/* Header */}
@@ -131,7 +131,7 @@ export default async function C2IpPage({ params }: PageProps<"/app/modules/inves
                 {softwares.length > 0 && <p className="mt-0.5 text-[13px] text-muted-foreground">Software: {softwares.join(", ")}</p>}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No C2 attribution recorded for this IP in Talon.</p>
+              <p className="text-sm text-muted-foreground">No C2 attribution recorded for this IP.</p>
             )}
             {exposure?.tags?.length ? (
               <div className="flex flex-wrap gap-1.5">

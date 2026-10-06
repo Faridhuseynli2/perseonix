@@ -132,17 +132,15 @@ export async function CisoBoard({
   const updated = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
 
   return (
-    <section className="mt-2 rounded-2xl border border-ink/[0.09] bg-navy-900/30 p-5 lg:p-6">
+    <section className="mt-2 rounded-xl border border-ink/[0.09] bg-navy-900/30 p-5 lg:p-6">
       {/* Board header */}
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-ink/10 pb-4">
         <div>
-          <p className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-glow uppercase">
-            <span className="text-muted-foreground/40">05</span> CISO Board
-          </p>
+          <p className="font-mono text-[10px] tracking-[0.18em] text-glow uppercase">CISO Board</p>
           <h2 className="mt-1.5 font-display text-[20px] leading-none font-semibold tracking-tight text-ink">
             Executive risk briefing
           </h2>
-          <p className="mt-1 text-[13px] text-muted-foreground">Board-level view · aligned to NIST CSF · updated {updated}</p>
+          <p className="mt-1 text-[13px] text-muted-foreground">NIST CSF · updated {updated}</p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-md border border-ink/10 bg-ink/[0.03] px-2.5 py-1 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
           <ShieldCheck className="size-3.5 text-glow" /> NIST CSF
@@ -159,7 +157,7 @@ export async function CisoBoard({
           </p>
         </div>
         <div className="rounded-xl border border-ink/[0.08] bg-navy-950/30 p-5">
-          <p className="font-mono text-[9px] tracking-[0.18em] text-muted-foreground/55 uppercase">Bottom line</p>
+          <p className="font-mono text-[9px] tracking-[0.18em] text-muted-foreground/55 uppercase">Summary</p>
           <p className="mt-2 text-[15px] leading-relaxed text-foreground/85">
             Over the last 30 days,{" "}
             <strong className="font-semibold text-ink">{n(rw30?.totalVictims ?? live.last30d)}</strong> ransomware victims
@@ -186,7 +184,7 @@ export async function CisoBoard({
       </div>
 
       {/* Governance pillars */}
-      <p className="mt-6 font-mono text-[10px] tracking-[0.16em] text-muted-foreground/55 uppercase">Where risk concentrates</p>
+      <p className="mt-6 font-mono text-[10px] tracking-[0.16em] text-muted-foreground/55 uppercase">Risk concentration</p>
       <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {pillars.map((p) => (
           <Link

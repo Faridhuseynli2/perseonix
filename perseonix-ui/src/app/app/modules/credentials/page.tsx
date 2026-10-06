@@ -16,21 +16,22 @@ export default async function CredentialsPage() {
 
   return (
     <div className="mx-auto max-w-[1100px]">
-      <div>
-        <p className="eyebrow text-glow">Module</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{module.name}</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          Find exposed credentials for your organisation — breached accounts and infostealer-infected
-          devices — and check individual passwords and emails.
+      <header className="border-b border-ink/10 pb-5">
+        <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Credential Exposure</p>
+        <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
+          {module.name}
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Exposed credentials for your org: breached accounts and infostealer logs. Also checks individual
+          passwords and emails.
         </p>
-      </div>
+      </header>
 
       <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-ink/[0.07] bg-navy-800/40 px-4 py-3">
         <Lock className="mt-0.5 size-4 shrink-0 text-glow" />
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Privacy by design: passwords are hashed in your browser and never sent or stored, and a
-          plaintext password is never displayed. Only scan domains and addresses you are authorised
-          to check.
+          Passwords are hashed in your browser — never sent, stored or displayed in plaintext. Only scan
+          domains and addresses you are authorized to check.
         </p>
       </div>
 

@@ -28,7 +28,7 @@ export function Wallboard({ children, tz = "UTC" }: { children: React.ReactNode;
         <div className="flex items-center gap-2.5">
           <Radar className="size-5 text-glow" />
           <span className="font-mono text-[13px] font-semibold tracking-[0.22em] text-ink uppercase">
-            Perseonix Corvael<span className="text-muted-foreground/40">{" // "}</span>Threat Wall
+            Threat Wall
           </span>
           <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-glow uppercase">
             <span aria-hidden className="size-2 rounded-full bg-glow motion-safe:animate-beacon" /> Live

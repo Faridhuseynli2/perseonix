@@ -36,10 +36,9 @@ const rangeWord: Record<string, string> = {
   all: "all time",
 }
 
-function SectionLabel({ index, title, aside }: { index: string; title: string; aside?: string }) {
+function SectionLabel({ title, aside }: { title: string; aside?: string }) {
   return (
     <div className="mb-3 flex items-center gap-3">
-      <span className="font-mono text-[11px] font-semibold text-sev-critical">{index}</span>
       <h2 className="font-mono text-[12px] font-semibold tracking-[0.18em] text-ink uppercase">{title}</h2>
       <span aria-hidden className="h-px flex-1 bg-ink/10" />
       {aside && <span className="font-mono text-[10px] tracking-wide text-muted-foreground/50 uppercase">{aside}</span>}
@@ -87,17 +86,12 @@ export default async function RansomwareDashboard({
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div className="min-w-0">
           <p className="font-mono text-[10px] tracking-[0.22em] text-sev-critical/90 uppercase">
-            Perseonix Corvael // Ransomware Ops
+            Extortion Intelligence
           </p>
           <h1 className="mt-2 font-display text-[28px] leading-none font-semibold tracking-tight text-ink lg:text-4xl">
-            Ransomware Command
+            Ransomware
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5 font-semibold text-sev-critical">
-              <span aria-hidden className="size-1.5 rounded-full bg-sev-critical motion-safe:animate-beacon" />
-              LIVE
-            </span>
-            <span aria-hidden className="text-muted-foreground/30">/</span>
             <span>{ingestion ? `updated ${timeAgo(ingestion.ranAt)}` : "awaiting first refresh"}</span>
             <span aria-hidden className="text-muted-foreground/30">/</span>
             <span>window: {rangeWord[range]}</span>
@@ -152,7 +146,7 @@ export default async function RansomwareDashboard({
       ) : (
         <>
           <section>
-            <SectionLabel index="01" title="Live threat feed" aside={`${live.last30d} in ${rangeWord[range] === "all time" ? "range" : rangeWord[range]}`} />
+            <SectionLabel title="Live threat feed" aside={`${live.last30d} in ${rangeWord[range] === "all time" ? "range" : rangeWord[range]}`} />
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(340px,440px)]">
               <LiveFeed victims={feed} />
               <AttackMap points={points} />
@@ -160,12 +154,12 @@ export default async function RansomwareDashboard({
           </section>
 
           <section>
-            <SectionLabel index="02" title="Attack volume" />
+            <SectionLabel title="Attack volume" />
             <AttackVolume points={volume} title={`Claims per ${range === "30d" ? "day" : "month"} — last ${rangeWord[range]}`} />
           </section>
 
           <section>
-            <SectionLabel index="03" title="Targeting breakdown" />
+            <SectionLabel title="Targeting breakdown" />
             <div className="grid gap-4 lg:grid-cols-3">
               <RankCard kind="groups" rows={groups} />
               <RankCard kind="countries" rows={countries} />

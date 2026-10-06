@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowUpRight, Bug, Crosshair, KeyRound, Newspaper, Radar, ShieldCheck, Siren, Skull } from "lucide-react"
+import { ArrowUpRight, Siren } from "lucide-react"
 import { DashboardRefresher } from "@/components/intel/dashboard-refresher"
 import { LiveClock } from "@/components/intel/live-clock"
 import { TimezoneAutoSet } from "@/components/settings/timezone-autoset"
@@ -10,7 +10,6 @@ import { listDetections } from "@/lib/brand/store"
 import { cveStats, listCves } from "@/lib/intel/cve"
 import { listArticles, newsStats, topMentions } from "@/lib/intel/news"
 import { notificationFeed } from "@/lib/notifications/feed"
-import { datasetStats } from "@/lib/adversaries/data"
 import { liveSnapshot, recentVictims, type Range } from "@/lib/ransomware/data"
 import { cn } from "@/lib/utils"
 
@@ -20,7 +19,7 @@ const SEV_DOT: Record<string, string> = {
   critical: "bg-sev-critical",
   high: "bg-sev-high",
   medium: "bg-signal",
-  low: "bg-glow",
+  low: "bg-sev-low",
   info: "bg-muted-foreground/50",
 }
 
@@ -56,9 +55,6 @@ export default async function CommandCenter() {
     listDetections(actor),
     notificationFeed(user),
   ])
-  const adv = datasetStats()
-  const firstName = user.name?.trim().split(/\s+/)[0] || "analyst"
-
   // 7-day trend sparklines
   const newsTrend = last7(news7.map((a) => a.publishedAt ?? a.createdAt))
   const rwTrend = last7(rw7.map((v) => v.discovered))
@@ -87,8 +83,8 @@ export default async function CommandCenter() {
   if (highBrand > 0) brief.push(`${highBrand} high-risk ${plural(highBrand, "lookalike")}`)
   if (alerts.unread > 0) brief.push(`${alerts.unread} unread ${plural(alerts.unread, "alert")}`)
   const briefing = brief.length
-    ? `${brief.slice(0, 3).join(" · ")} — posture ${bandWord[band]}`
-    : "No active pressure signals — all monitored feeds quiet"
+    ? `${brief.slice(0, 3).join(" · ")} · posture ${bandWord[band]}`
+    : "No critical signals. All feeds nominal."
 
   // Bloomberg-style metric rail (hairline-divided terminal strip).
   const rail = [
@@ -113,15 +109,6 @@ export default async function CommandCenter() {
   queue.sort((a, b) => (sevRank[a.sev] ?? 5) - (sevRank[b.sev] ?? 5))
   const tasks = queue.slice(0, 8)
 
-  const tiles = [
-    { label: "CVE Feed", value: n(cstats.total), sub: `${cstats.kev} exploited`, href: "/app/modules/intel/cve", icon: Bug },
-    { label: "Cyber Threat News", value: n(nstats.total), sub: `${nstats.last24h} today`, href: "/app/modules/intel/news", icon: Newspaper },
-    { label: "Ransomware", value: n(live.last24h), sub: "victims · 24h", href: "/app/modules/ransomware", icon: Skull },
-    { label: "Adversaries", value: n(adv.groups), sub: "tracked actors", href: "/app/modules/adversaries", icon: Crosshair },
-    { label: "Brand", value: n(detections.length), sub: "lookalikes", href: "/app/modules/brand", icon: ShieldCheck },
-    { label: "Credentials", value: "—", sub: "exposure check", href: "/app/modules/credentials", icon: KeyRound },
-  ]
-
   const maxActor = Math.max(1, ...actorsTop.map((a) => a.count))
   const maxMalware = Math.max(1, ...malwareTop.map((m) => m.count))
 
@@ -134,23 +121,18 @@ export default async function CommandCenter() {
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-4">
         <div>
           <p className="eyebrow flex items-center gap-2 text-[10px] text-glow">
-            <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow motion-safe:animate-beacon" />
-            Perseonix Corvael // Command Center
+            <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow" />
+            Command Center
           </p>
           <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
-            Welcome back, {firstName}.
+            {user.organizationName || "Security operations"}
           </h1>
           <p className="mt-2 flex items-center gap-2 font-mono text-[11px] text-foreground/70">
-            <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", bandDot[band], band !== "low" && "motion-safe:animate-beacon")} />
+            <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", bandDot[band])} />
             {briefing}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <LiveClock tz={user.timezone} />
-          {user.organizationName ? (
-            <span className="font-mono text-[10px] tracking-wide text-muted-foreground/50 uppercase">{user.organizationName}</span>
-          ) : null}
-        </div>
+        <LiveClock tz={user.timezone} />
       </div>
 
       {/* Metric rail — Bloomberg-terminal strip. gap-px over an ink ground
@@ -171,10 +153,10 @@ export default async function CommandCenter() {
         <section className="rounded-xl border border-ink/[0.09] bg-navy-900/50 p-5">
           <PostureGauge score={score} />
           <div className="mt-4 border-t border-ink/[0.07] pt-3">
-            <p className="font-mono text-[9px] tracking-[0.14em] text-muted-foreground/60 uppercase">What&apos;s driving it</p>
+            <p className="font-mono text-[9px] tracking-[0.14em] text-muted-foreground/60 uppercase">Posture drivers</p>
             <ul className="mt-2 grid gap-1.5">
               {drivers.length === 0 ? (
-                <li className="text-[13px] text-muted-foreground">All quiet — no active pressure signals.</li>
+                <li className="text-[13px] text-muted-foreground">No active pressure signals.</li>
               ) : (
                 drivers
                   .sort((a, b) => b.pts - a.pts)
@@ -226,11 +208,10 @@ export default async function CommandCenter() {
             <Siren className="size-4 text-sev-critical" /> Priority queue
             <span className="font-normal text-muted-foreground/50">{tasks.length}</span>
           </h2>
-          <span className="font-mono text-[10px] text-muted-foreground/50">what needs your attention now</span>
         </div>
         {tasks.length === 0 ? (
           <p className="mt-4 rounded-lg border border-dashed border-ink/12 bg-navy-950/40 px-4 py-8 text-center text-sm text-muted-foreground">
-            Nothing urgent right now. New KEV CVEs, critical news and high-risk lookalikes will surface here.
+            No priority items. New KEV CVEs, critical news and high-risk lookalikes appear here.
           </p>
         ) : (
           <ul className="mt-3 grid gap-1.5">
@@ -253,23 +234,10 @@ export default async function CommandCenter() {
         )}
       </section>
 
-      {/* Trending + module tiles */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      {/* Trending actors + malware */}
+      <div className="grid gap-4 lg:grid-cols-2">
         <RankBars title="Trending threat actors" rows={actorsTop} max={maxActor} color="#ff4d5e" hrefFor={(v) => `/app/modules/adversaries/actor/${encodeURIComponent(v)}`} />
         <RankBars title="Active malware families" rows={malwareTop} max={maxMalware} color="#ff8a3d" />
-        <section className="rounded-xl border border-ink/[0.09] bg-navy-900/40 p-5">
-          <h2 className="font-mono text-[11px] font-semibold tracking-[0.14em] text-ink uppercase">Modules</h2>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {tiles.map((t) => (
-              <Link key={t.label} href={t.href} className="group rounded-lg border border-ink/[0.06] bg-navy-900/40 p-3 transition-colors hover:border-glow/30 hover:bg-navy-900/70">
-                <t.icon className="size-4 text-muted-foreground/60 group-hover:text-glow" />
-                <p className="mt-2 font-mono text-xl font-semibold text-ink tabular-nums">{t.value}</p>
-                <p className="font-mono text-[10px] tracking-wide text-muted-foreground/60 uppercase">{t.label}</p>
-                <p className="text-[10px] text-muted-foreground/50">{t.sub}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
       </div>
 
       {/* CISO Board — executive / board-level strategic view */}
@@ -282,11 +250,6 @@ export default async function CommandCenter() {
         detections={detections}
         alertsUnread={alerts.unread}
       />
-
-      <p className="pt-1 text-center font-mono text-[10px] text-muted-foreground/40">
-        <Radar className="mr-1 inline size-3" />
-        Perseonix Corvael · unified command center
-      </p>
     </div>
   )
 }
@@ -308,7 +271,7 @@ function RankBars({
     <section className="rounded-xl border border-ink/[0.09] bg-navy-900/40 p-5">
       <h2 className="font-mono text-[11px] font-semibold tracking-[0.14em] text-ink uppercase">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">No data yet.</p>
+        <p className="mt-4 text-sm text-muted-foreground">Nothing ranked yet.</p>
       ) : (
         <ul className="mt-3 grid gap-2">
           {rows.map((r) => {

@@ -31,7 +31,7 @@ export default async function ModuleConnectorsPage({
       </Link>
 
       <header className="mt-4 border-b border-ink/10 pb-5">
-        <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Perseonix Corvael // Ingestion</p>
+        <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Module Connectors // Ingestion</p>
         <h1 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink">
           <Plug className="size-5 text-glow" />
           Module Connectors

@@ -5,19 +5,19 @@ export const THEMES = [
     value: "perseonix",
     label: "Perseonix",
     badge: "Default",
-    description: "Our signature deep-navy workspace with electric-blue accents.",
+    description: "Deep-navy workspace, red accents.",
   },
   {
     value: "dark",
     label: "Dark",
     badge: null,
-    description: "Neutral graphite for low light and long analysis sessions.",
+    description: "Neutral graphite, low-light.",
   },
   {
     value: "light",
     label: "Light",
     badge: null,
-    description: "Bright, high-contrast surfaces for daylight work.",
+    description: "High-contrast, light mode.",
   },
 ] as const
 

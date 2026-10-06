@@ -1,7 +1,5 @@
 import type { Metadata } from "next"
-import { Gauge, Radar, Server, Siren } from "lucide-react"
-import { BentoCard } from "@/components/app/bento-card"
-import { Badge } from "@/components/ui/badge"
+import { ShieldCheck } from "lucide-react"
 import { requireModule } from "@/lib/auth/dal"
 
 export const metadata: Metadata = {
@@ -12,57 +10,34 @@ export default async function ModulePage({
   params,
 }: PageProps<"/app/modules/[moduleKey]">) {
   const { moduleKey } = await params
-  const { module } = await requireModule(moduleKey)
+  const { user, module } = await requireModule(moduleKey)
+  const org = user.organizationName || "your account"
 
   return (
-    <div className="mx-auto max-w-[1400px]">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto max-w-[1100px]">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
-          <p className="eyebrow text-glow">Module</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">
+          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">{module.key}</p>
+          <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
             {module.name}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">{module.description}</p>
+          {module.description && <p className="mt-2 text-sm text-muted-foreground">{module.description}</p>}
         </div>
-        <Badge
-          variant="outline"
-          className="h-6 gap-1.5 border-ink/10 px-2.5 font-mono text-[11px] text-muted-foreground"
-        >
-          <span aria-hidden className="size-1.5 rounded-full bg-glow" />
-          Licensed
-        </Badge>
-      </div>
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-ink/10 bg-ink/[0.03] px-2.5 py-1 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
+          <span aria-hidden className="size-1.5 rounded-full bg-sev-low" /> Enabled
+        </span>
+      </header>
 
-      <div className="mt-8 grid auto-rows-[minmax(200px,auto)] grid-cols-1 gap-4 md:grid-cols-6">
-        <BentoCard
-          slot={`${module.key}-asset-inventory`}
-          title="Asset inventory"
-          description="Domains, IPs and cloud assets discovered"
-          icon={Radar}
-          className="md:col-span-4 md:row-span-2"
-        />
-        <BentoCard
-          slot={`${module.key}-exposure-score`}
-          title="Exposure score"
-          description="Current external risk posture"
-          icon={Gauge}
-          className="md:col-span-2"
-        />
-        <BentoCard
-          slot={`${module.key}-open-findings`}
-          title="Open findings"
-          description="Findings awaiting triage"
-          icon={Siren}
-          className="md:col-span-2"
-        />
-        <BentoCard
-          slot={`${module.key}-exposed-services`}
-          title="Exposed services"
-          description="Internet-reachable services by risk"
-          icon={Server}
-          className="md:col-span-6"
-        />
-      </div>
+      <section className="mt-8 rounded-xl border border-ink/[0.09] bg-navy-900/40 p-10 text-center">
+        <ShieldCheck className="mx-auto size-7 text-glow" />
+        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-foreground/85">
+          {module.name} is licensed to {org}. The workspace is being provisioned — your Perseonix analyst
+          will confirm when it is available.
+        </p>
+        <p className="mx-auto mt-2 max-w-md font-mono text-[11px] text-muted-foreground/55">
+          Need it sooner? Contact your Perseonix analyst.
+        </p>
+      </section>
     </div>
   )
 }

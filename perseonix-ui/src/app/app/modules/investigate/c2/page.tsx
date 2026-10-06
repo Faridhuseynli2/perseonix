@@ -8,7 +8,7 @@ import { INVESTIGATE_MODULE_KEY } from "@/lib/investigate/meta"
 import { c2Overview, lastC2Ingestion } from "@/lib/c2/data"
 import { colorForSoftware } from "@/lib/c2/catalog"
 
-export const metadata: Metadata = { title: "Talon · C2 Hunting" }
+export const metadata: Metadata = { title: "C2 Hunting" }
 
 const n = (x: number) => x.toLocaleString("en-US")
 
@@ -56,14 +56,13 @@ export default async function TalonPage({ searchParams }: PageProps<"/app/module
       {/* Masthead */}
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-5">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Perseonix Corvael // Talon · C2 Hunting</p>
+          <p className="font-mono text-[10px] tracking-[0.22em] text-glow uppercase">Threat Investigation // C2 Hunting</p>
           <h1 className="mt-2 flex items-center gap-2.5 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
             <Crosshair className="size-6 text-sev-critical" />
-            Talon
+            C2 Hunting
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Hunt live command-and-control infrastructure — botnet C2, offensive frameworks and abused tooling, discovered
-            across the internet and attributed to malware families.
+            Live C2 infrastructure: botnet C2, offensive frameworks and abused tooling, attributed to malware families.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -161,7 +160,7 @@ export default async function TalonPage({ searchParams }: PageProps<"/app/module
       </section>
 
       <p className="pt-1 text-center font-mono text-[10px] text-muted-foreground/40">
-        Talon · {ingestion ? `last hunt ${ago(ingestion.ranAt)}` : "awaiting first hunt"} · sources: Shodan · abuse.ch Feodo
+        C2 Hunting · {ingestion ? `last hunt ${ago(ingestion.ranAt)}` : "awaiting first hunt"} · sources: Shodan · abuse.ch Feodo
       </p>
     </div>
   )

@@ -13,15 +13,15 @@ function ago(iso: string): string {
 
 export function ModuleHeader({ lastIngestion }: { lastIngestion: IngestionInfo }) {
   return (
-    <section className="hud-corners relative overflow-hidden rounded-2xl border border-ink/[0.08] bg-navy-900/70">
+    <section className="hud-corners relative overflow-hidden rounded-xl border border-ink/[0.08] bg-navy-900/70">
       <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-sev-critical" />
       <div aria-hidden className="hud-grid fade-mask-top pointer-events-none absolute inset-0 opacity-50" />
       <div className="relative p-6 lg:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="eyebrow flex items-center gap-2 text-[10px] text-glow">
-              <span aria-hidden className="inline-block size-1.5 rounded-full bg-sev-critical motion-safe:animate-beacon" />
-              Perseonix Corvael // Ransomware Tracker
+              <span aria-hidden className="inline-block size-1.5 rounded-full bg-sev-critical" />
+              Extortion Intelligence
             </p>
             <div className="mt-3 flex items-center gap-3">
               <span
@@ -31,7 +31,7 @@ export function ModuleHeader({ lastIngestion }: { lastIngestion: IngestionInfo }
                 <Skull className="size-5.5" />
               </span>
               <h1 className="font-display text-2xl font-semibold tracking-tight text-ink lg:text-3xl">
-                Ransomware Tracker
+                Ransomware
               </h1>
             </div>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
