@@ -73,6 +73,8 @@ export const users = pgTable(
     theme: userTheme("theme").notNull().default("perseonix"),
     // IANA timezone (e.g. "Asia/Baku") — data timestamps render in the user's local time.
     timezone: text("timezone").notNull().default("UTC"),
+    // UI language ("en" | "tr" | "ru"), chosen in Settings; defaults to English.
+    locale: text("locale").notNull().default("en"),
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
     passwordChangedAt: timestamp("password_changed_at", { withTimezone: true })
       .notNull()

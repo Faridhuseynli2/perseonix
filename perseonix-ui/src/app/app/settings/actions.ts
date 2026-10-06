@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { getDb } from "@/db"
 import { users } from "@/db/schema"
 import { requireUser } from "@/lib/auth/dal"
+import { isLocale } from "@/lib/i18n/config"
 import { isTheme } from "@/lib/theme"
 import { isValidTimeZone } from "@/lib/timezone"
 
@@ -14,6 +15,26 @@ export async function updateTheme(theme: string): Promise<{ error?: string }> {
 
   const db = await getDb()
   await db.update(users).set({ theme }).where(eq(users.id, user.id))
+  revalidatePath("/app", "layout")
+  return {}
+}
+
+export async function updateLocale(locale: string): Promise<{ error?: string }> {
+  const user = await requireUser()
+  if (!isLocale(locale)) return { error: "That language isn't available." }
+
+  const db = await getDb()
+  try {
+    await db.update(users).set({ locale }).where(eq(users.id, user.id))
+  } catch (error) {
+    // Column may not exist yet if the server hasn't restarted to apply migration
+    // 0026 — don't crash; the setting takes effect after the restart.
+    const e = error as { code?: string; cause?: { code?: string } }
+    if (e?.code === "42703" || e?.cause?.code === "42703") {
+      return { error: "Language will be available after the next server restart." }
+    }
+    throw error
+  }
   revalidatePath("/app", "layout")
   return {}
 }

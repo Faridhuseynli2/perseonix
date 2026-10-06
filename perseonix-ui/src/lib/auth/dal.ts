@@ -31,6 +31,7 @@ export type CurrentUser = {
   mustChangePassword: boolean
   theme: Theme
   timezone: string
+  locale: string
   sessionId: string
   /** Modules this user may open. Administrators get every active module. */
   modules: ModuleSummary[]
@@ -60,19 +61,20 @@ const resolveSession = cache(async (): Promise<SessionResolution> => {
     endsAt: organizations.endsAt,
     expiresAt: sessions.expiresAt,
   }
-  const querySession = (withTimezone: boolean) =>
+  const querySession = (withPrefs: boolean) =>
     db
-      .select(withTimezone ? { ...baseColumns, timezone: users.timezone } : baseColumns)
+      .select(withPrefs ? { ...baseColumns, timezone: users.timezone, locale: users.locale } : baseColumns)
       .from(sessions)
       .innerJoin(users, eq(users.id, sessions.userId))
       .leftJoin(organizations, eq(organizations.id, users.organizationId))
       .where(eq(sessions.id, sessionId))
       .limit(1)
 
-  // `timezone` (migration 0023) may not exist yet on a server that hasn't been
-  // restarted since it was added. Core auth can't degrade to empty, so tolerate
-  // the missing column and fall back to UTC instead of hard-crashing every page.
-  let row: Awaited<ReturnType<typeof querySession>>[number] & { timezone?: string }
+  // `timezone` (migration 0023) and `locale` (migration 0026) may not exist yet
+  // on a server that hasn't been restarted since they were added. Core auth can't
+  // degrade to empty, so tolerate the missing columns and fall back to defaults
+  // instead of hard-crashing every page.
+  let row: Awaited<ReturnType<typeof querySession>>[number] & { timezone?: string; locale?: string }
   try {
     ;[row] = await querySession(true)
   } catch (error) {
@@ -80,6 +82,7 @@ const resolveSession = cache(async (): Promise<SessionResolution> => {
     ;[row] = await querySession(false)
   }
   const timezone = row?.timezone ?? "UTC"
+  const locale = row?.locale ?? "en"
 
   if (!row || row.status !== "active" || row.expiresAt.getTime() <= Date.now()) {
     return { status: "none" }
@@ -119,6 +122,7 @@ const resolveSession = cache(async (): Promise<SessionResolution> => {
       mustChangePassword: row.mustChangePassword,
       theme: row.theme,
       timezone,
+      locale,
       sessionId,
       modules: available,
     },

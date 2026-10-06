@@ -2,33 +2,41 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Clock, Palette, type LucideIcon } from "lucide-react"
+import { Clock, Languages, Palette, type LucideIcon } from "lucide-react"
+import { usePortalT } from "@/components/i18n/portal-i18n"
 import { cn } from "@/lib/utils"
 
 type SettingsItem = { href: string; label: string; description: string; icon: LucideIcon }
 
-const sections: { label: string; items: SettingsItem[] }[] = [
-  {
-    label: "Preferences",
-    items: [
-      {
-        href: "/app/settings/theme",
-        label: "Theme",
-        description: "Perseonix, dark or light",
-        icon: Palette,
-      },
-      {
-        href: "/app/settings/timezone",
-        label: "Timezone",
-        description: "Show all times in your local time",
-        icon: Clock,
-      },
-    ],
-  },
-]
-
 export function SettingsNav() {
   const pathname = usePathname()
+  const { t } = usePortalT()
+
+  const sections: { label: string; items: SettingsItem[] }[] = [
+    {
+      label: t.settings.preferences,
+      items: [
+        {
+          href: "/app/settings/language",
+          label: t.settings.language,
+          description: t.settings.languageDesc,
+          icon: Languages,
+        },
+        {
+          href: "/app/settings/theme",
+          label: t.settings.theme,
+          description: t.settings.themeDesc,
+          icon: Palette,
+        },
+        {
+          href: "/app/settings/timezone",
+          label: t.settings.timezone,
+          description: t.settings.timezoneDesc,
+          icon: Clock,
+        },
+      ],
+    },
+  ]
 
   return (
     <nav
