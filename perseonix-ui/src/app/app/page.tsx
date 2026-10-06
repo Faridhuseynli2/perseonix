@@ -6,7 +6,6 @@ import { TimezoneAutoSet } from "@/components/settings/timezone-autoset"
 import { PostureGauge, postureBand, SeverityBar, Sparkline } from "@/components/app/overview-widgets"
 import { CisoBoard } from "@/components/app/ciso-board"
 import { requireUser } from "@/lib/auth/dal"
-import { getPortalDict } from "@/lib/i18n/portal"
 import { listDetections } from "@/lib/brand/store"
 import { cveStats, listCves } from "@/lib/intel/cve"
 import { listArticles, newsStats, topMentions } from "@/lib/intel/news"
@@ -42,7 +41,6 @@ function last7(dates: (string | null)[]): number[] {
 
 export default async function CommandCenter() {
   const user = await requireUser()
-  const t = getPortalDict(user.locale)
   const actor = { id: user.id, organizationId: user.organizationId }
 
   const [cstats, cveRows, nstats, news7, actorsTop, malwareTop, live, rw7, detections, alerts] = await Promise.all([
@@ -73,7 +71,7 @@ export default async function CommandCenter() {
   ].filter((d) => d.pts > 0)
   const score = Math.min(100, Math.round(drivers.reduce((a, d) => a + d.pts, 0)))
   const band = postureBand(score)
-  const bandWord: Record<string, string> = t.posture
+  const bandWord: Record<string, string> = { critical: "critical", high: "elevated", guarded: "guarded", low: "low" }
   const bandDot: Record<string, string> = { critical: "bg-sev-critical", high: "bg-sev-high", guarded: "bg-signal", low: "bg-glow" }
 
   // Plain-language situation report, assembled from the live numbers.
@@ -85,17 +83,17 @@ export default async function CommandCenter() {
   if (highBrand > 0) brief.push(`${highBrand} high-risk ${plural(highBrand, "lookalike")}`)
   if (alerts.unread > 0) brief.push(`${alerts.unread} unread ${plural(alerts.unread, "alert")}`)
   const briefing = brief.length
-    ? `${brief.slice(0, 3).join(" · ")} · ${t.overview.postureLabel} ${bandWord[band]}`
-    : t.overview.noSignals
+    ? `${brief.slice(0, 3).join(" · ")} · posture ${bandWord[band]}`
+    : "No critical signals. All feeds nominal."
 
   // Bloomberg-style metric rail (hairline-divided terminal strip).
   const rail = [
-    { label: t.overview.rail.riskPosture, value: n(score), sub: bandWord[band] },
-    { label: t.overview.rail.exploited, value: n(cstats.kev), sub: t.overview.rail.kevCves },
-    { label: t.overview.rail.ransomware, value: n(live.last24h), sub: t.overview.rail.victims24h },
-    { label: t.overview.rail.news, value: n(nstats.last24h), sub: t.common.today },
-    { label: t.overview.rail.lookalikes, value: n(highBrand), sub: t.overview.rail.highRisk },
-    { label: t.overview.rail.alerts, value: n(alerts.unread), sub: t.overview.rail.unread },
+    { label: "Risk posture", value: n(score), sub: bandWord[band] },
+    { label: "Exploited", value: n(cstats.kev), sub: "KEV CVEs" },
+    { label: "Ransomware", value: n(live.last24h), sub: "victims · 24h" },
+    { label: "News", value: n(nstats.last24h), sub: "today" },
+    { label: "Lookalikes", value: n(highBrand), sub: "high-risk" },
+    { label: "Alerts", value: n(alerts.unread), sub: "unread" },
   ]
 
   // Priority action queue — the "do this now" list, curated across modules
@@ -124,10 +122,10 @@ export default async function CommandCenter() {
         <div>
           <p className="eyebrow flex items-center gap-2 text-[10px] text-glow">
             <span aria-hidden className="inline-block size-1.5 rounded-full bg-glow" />
-            {t.overview.commandCenter}
+            Command Center
           </p>
           <h1 className="mt-2 font-display text-[26px] leading-none font-semibold tracking-tight text-ink lg:text-[30px]">
-            {user.organizationName || t.overview.workspaceFallback}
+            {user.organizationName || "Security operations"}
           </h1>
           <p className="mt-2 flex items-center gap-2 font-mono text-[11px] text-foreground/70">
             <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", bandDot[band])} />
@@ -155,10 +153,10 @@ export default async function CommandCenter() {
         <section className="rounded-xl border border-ink/[0.09] bg-navy-900/50 p-5">
           <PostureGauge score={score} />
           <div className="mt-4 border-t border-ink/[0.07] pt-3">
-            <p className="font-mono text-[9px] tracking-[0.14em] text-muted-foreground/60 uppercase">{t.overview.postureDrivers}</p>
+            <p className="font-mono text-[9px] tracking-[0.14em] text-muted-foreground/60 uppercase">Posture drivers</p>
             <ul className="mt-2 grid gap-1.5">
               {drivers.length === 0 ? (
-                <li className="text-[13px] text-muted-foreground">{t.overview.noDrivers}</li>
+                <li className="text-[13px] text-muted-foreground">No active pressure signals.</li>
               ) : (
                 drivers
                   .sort((a, b) => b.pts - a.pts)
@@ -176,27 +174,27 @@ export default async function CommandCenter() {
         {/* Right column: sparklines + severity bars */}
         <div className="flex flex-col gap-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <Sparkline data={cveTrend} label={t.overview.vulnerabilities} color="#ff8a3d" href="/app/modules/intel/cve" />
-            <Sparkline data={newsTrend} label={t.overview.threatNews} color="#00b5fa" href="/app/modules/intel/news" />
-            <Sparkline data={rwTrend} label={t.overview.ransomware} color="#ff4d5e" href="/app/modules/ransomware" />
+            <Sparkline data={cveTrend} label="Vulnerabilities" color="#ff8a3d" href="/app/modules/intel/cve" />
+            <Sparkline data={newsTrend} label="Threat news" color="#00b5fa" href="/app/modules/intel/news" />
+            <Sparkline data={rwTrend} label="Ransomware" color="#ff4d5e" href="/app/modules/ransomware" />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <SeverityBar
-              title={t.overview.cveSeverityMix}
+              title="CVE severity mix"
               total={cstats.total}
               segments={[
-                { label: t.common.sev.critical, value: cstats.critical, color: "#ff4d5e" },
-                { label: t.common.sev.high, value: cstats.high, color: "#ff8a3d" },
-                { label: t.common.sev.medium, value: cstats.medium, color: "#ffb400" },
+                { label: "Critical", value: cstats.critical, color: "#ff4d5e" },
+                { label: "High", value: cstats.high, color: "#ff8a3d" },
+                { label: "Medium", value: cstats.medium, color: "#ffb400" },
               ]}
             />
             <SeverityBar
-              title={t.overview.threatNewsSeverity}
+              title="Threat-news severity"
               total={nstats.total}
               segments={[
-                { label: t.common.sev.critical, value: nstats.critical, color: "#ff4d5e" },
-                { label: t.common.sev.high, value: nstats.high, color: "#ff8a3d" },
-                { label: t.common.sev.info, value: Math.max(0, nstats.total - nstats.critical - nstats.high), color: "#3a4a6b" },
+                { label: "Critical", value: nstats.critical, color: "#ff4d5e" },
+                { label: "High", value: nstats.high, color: "#ff8a3d" },
+                { label: "Other", value: Math.max(0, nstats.total - nstats.critical - nstats.high), color: "#3a4a6b" },
               ]}
             />
           </div>
@@ -207,13 +205,13 @@ export default async function CommandCenter() {
       <section className="rounded-xl border border-ink/[0.09] bg-navy-900/40 p-5">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 font-mono text-[11px] font-semibold tracking-[0.14em] text-ink uppercase">
-            <Siren className="size-4 text-sev-critical" /> {t.overview.priorityQueue}
+            <Siren className="size-4 text-sev-critical" /> Priority queue
             <span className="font-normal text-muted-foreground/50">{tasks.length}</span>
           </h2>
         </div>
         {tasks.length === 0 ? (
           <p className="mt-4 rounded-lg border border-dashed border-ink/12 bg-navy-950/40 px-4 py-8 text-center text-sm text-muted-foreground">
-            {t.overview.noPriorityItems}
+            No priority items. New KEV CVEs, critical news and high-risk lookalikes appear here.
           </p>
         ) : (
           <ul className="mt-3 grid gap-1.5">
@@ -238,8 +236,8 @@ export default async function CommandCenter() {
 
       {/* Trending actors + malware */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <RankBars title={t.overview.trendingActors} empty={t.overview.nothingRanked} rows={actorsTop} max={maxActor} color="#ff4d5e" hrefFor={(v) => `/app/modules/adversaries/actor/${encodeURIComponent(v)}`} />
-        <RankBars title={t.overview.activeMalware} empty={t.overview.nothingRanked} rows={malwareTop} max={maxMalware} color="#ff8a3d" />
+        <RankBars title="Trending threat actors" rows={actorsTop} max={maxActor} color="#ff4d5e" hrefFor={(v) => `/app/modules/adversaries/actor/${encodeURIComponent(v)}`} />
+        <RankBars title="Active malware families" rows={malwareTop} max={maxMalware} color="#ff8a3d" />
       </div>
 
       {/* CISO Board — executive / board-level strategic view */}
@@ -258,14 +256,12 @@ export default async function CommandCenter() {
 
 function RankBars({
   title,
-  empty,
   rows,
   max,
   color,
   hrefFor,
 }: {
   title: string
-  empty: string
   rows: { value: string; count: number }[]
   max: number
   color: string
@@ -275,7 +271,7 @@ function RankBars({
     <section className="rounded-xl border border-ink/[0.09] bg-navy-900/40 p-5">
       <h2 className="font-mono text-[11px] font-semibold tracking-[0.14em] text-ink uppercase">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">{empty}</p>
+        <p className="mt-4 text-sm text-muted-foreground">Nothing ranked yet.</p>
       ) : (
         <ul className="mt-3 grid gap-2">
           {rows.map((r) => {

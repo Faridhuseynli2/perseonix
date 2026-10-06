@@ -29,10 +29,8 @@ import {
 } from "lucide-react"
 import { Logo } from "@/components/brand/logo"
 import { useSidebar } from "@/components/app/app-shell"
-import { usePortalT } from "@/components/i18n/portal-i18n"
 import { logout } from "@/lib/auth/actions"
 import { initials } from "@/lib/format"
-import type { ModuleKey } from "@/lib/i18n/portal"
 import { cn } from "@/lib/utils"
 
 type NavItem = { href: string; label: string; icon: LucideIcon; children?: NavItem[] }
@@ -57,6 +55,11 @@ const moduleIcons: Record<string, LucideIcon> = {
   brand: ShieldCheck,
   credentials: KeyRound,
 }
+
+const workspaceItems: NavItem[] = [
+  { href: "/app", label: "Overview", icon: LayoutGrid },
+  { href: "/app/settings", label: "Settings", icon: Settings },
+]
 
 const adminItems: NavItem[] = [
   { href: "/app/admin", label: "Overview", icon: Gauge },
@@ -84,7 +87,6 @@ type AppSidebarProps = {
 export function AppSidebar({ user, modules }: AppSidebarProps) {
   const pathname = usePathname()
   const { close } = useSidebar()
-  const { t } = usePortalT()
   // Manual expand/collapse overrides; undefined = follow the active route.
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
@@ -93,24 +95,19 @@ export function AppSidebar({ user, modules }: AppSidebarProps) {
     if (typeof window !== "undefined" && window.innerWidth < 1024) close()
   }
 
-  const workspaceItems: NavItem[] = [
-    { href: "/app", label: t.nav.overview, icon: LayoutGrid },
-    { href: "/app/settings", label: t.nav.settings, icon: Settings },
-  ]
-
   const sections: NavSection[] = [
-    { label: t.nav.workspace, items: workspaceItems },
+    { label: "Workspace", items: workspaceItems },
     {
-      label: t.nav.modules,
+      label: "Modules",
       items: modules.map((m) => ({
         href: `/app/modules/${m.key}`,
-        label: t.modules[m.key as ModuleKey] ?? m.name,
+        label: m.name,
         icon: moduleIcons[m.key] ?? Boxes,
         children: moduleChildren[m.key],
       })),
       empty: "No modules assigned yet.",
     },
-    ...(user.role === "admin" ? [{ label: t.nav.management, items: adminItems }] : []),
+    ...(user.role === "admin" ? [{ label: "Management", items: adminItems }] : []),
   ]
 
   // The deepest matching link wins (children included), so /app doesn't light up
@@ -226,7 +223,7 @@ export function AppSidebar({ user, modules }: AppSidebarProps) {
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-ink">{user.name}</span>
               <span className="block truncate text-xs text-muted-foreground">
-                {user.role === "admin" ? t.common.administrator : (user.organizationName ?? user.email)}
+                {user.role === "admin" ? "Administrator" : (user.organizationName ?? user.email)}
               </span>
             </span>
           </Link>
